@@ -1,0 +1,94 @@
+/* ==========================================================================
+   1. Configuração do Tema (Estrutura 100% Plana e Correta para v4)
+   ========================================================================== */
+
+@theme {
+  /* Paleta de Cores do Arcano */
+  --color-background: #161221;
+  --color-surface: #2f2546;
+  --color-primary: #FFD700;
+  --color-accent: #8b63e9;
+  --color-accent-rgb: 139 99 233; 
+  
+  --color-text-base: #F5F5F5;
+  --color-text-muted: #a495c6;
+  --color-text-on-primary: #1A1A2E;
+
+  /* Tipografia (agora como variáveis planas) */
+  --font-sans: "Noto Sans", sans-serif;
+  --font-serif: "Marcellus SC", serif;       /* Nova fonte para títulos */
+  --font-serif-logo: "Cinzel Decorative", serif; /* Nova fonte para o logo */
+}
+
+/* ==========================================================================
+   2. Estilos de Base
+   ========================================================================== */
+
+body {
+  background-color: theme(--color-background);
+  color: theme(--color-text-base);
+  font-family: theme(--font-sans); /* Define a fonte padrão para o corpo */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: theme(--font-serif); /* Define a fonte padrão para títulos */
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* ==========================================================================
+   3. Detalhes de UI
+   ========================================================================== */
+
+/* Estilização da Barra de Rolagem */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background-color: theme(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background-color: theme(--color-surface);
+  border-radius: 10px;
+  border: 2px solid theme(--color-background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: theme(--color-accent);
+}
+
+/* Estilização da Seleção de Texto */
+::selection {
+  background-color: rgba(var(--color-accent-rgb), 0.5);
+  color: theme(--color-text-base);
+}
+::-moz-selection {
+  background-color: rgba(var(--color-accent-rgb), 0.5);
+  color: theme(--color-text-base);
+}
+
+/* ==========================================================================
+   4. Animações Customizadas
+   ========================================================================== */
+
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   5. Classes de Utilitário Customizadas
+   ========================================================================== */
+
+@layer utilities {
+  .font-serif-logo {
+    font-family: theme(--font-serif-logo);
+  }
+}

@@ -1,0 +1,41 @@
+/* ==========================================================================
+   Biblioteca de Animações do Projeto Arcano
+   ========================================================================== */
+
+/* Definição das Animações (@keyframes) */
+
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+
+/* Classes de Utilitário para aplicar as animações */
+/* Usando @layer utilities para garantir que funcionem bem com o Tailwind */
+
+@layer utilities {
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-animation 6s ease-in-out infinite;
+  }
+  .animate-spin-slow {
+    animation: spin-slow 15s linear infinite;
+  }
+}
+/* Adicione ao final de src/styles/animations.css */
+
+@keyframes breathing-light {
+  0% { transform: scale(0.95); opacity: 0.4; }
+  50% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(0.95); opacity: 0.4; }
+}
+
+.animate-breathing-light {
+  animation: breathing-light 5s ease-in-out infinite;
+}
