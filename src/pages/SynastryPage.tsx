@@ -2,15 +2,13 @@
 
 import type { FC, ChangeEvent } from 'react';
 import { motion } from 'framer-motion';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
-import { BackgroundEffects } from '../components/layout/BackgroundEffects';
 import { Button } from '../components/ui/Button';
 import { Heart, LoaderCircle } from 'lucide-react';
 import { useSynastryForm } from '../hooks/useSynastryForm';
 import { useAuthStore } from '../store/authStore';
 import { FeatureGate } from '../components/auth/FeatureGate';
 
+// O sub-componente de input pode continuar vivendo aqui, pois é específico desta página
 const PersonInputFields: FC<{ 
   personLabel: string;
   values: Record<string, string>;
@@ -54,75 +52,67 @@ const SynastryPage: FC = () => {
   const user = useAuthStore((state) => state.user);
   
   return (
-    <div
-      className="relative flex min-h-screen flex-col bg-[#161221] overflow-hidden text-white"
-      style={{ fontFamily: '"Noto Sans", sans-serif' }}
-    >
-      <BackgroundEffects />
-      <Header />
-      
-      <main className="flex flex-col flex-1 items-center px-4 md:px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
+    // Os componentes de Layout como Header, Footer e BackgroundEffects foram removidos.
+    // O RootLayout agora cuida deles.
+    <main className="flex flex-col flex-1 items-center px-4 md:px-6 py-16">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="text-center"
+      >
+        <h1 className="font-serif text-4xl md:text-5xl text-white">O Encontro de Universos</h1>
+        <p className="text-lg md:text-xl text-[rgb(var(--color-text-muted))] max-w-2xl mx-auto mt-4 leading-relaxed">
+          Descubra os pontos de harmonia e os desafios na sua conexão com outra pessoa através da Sinastria, o mapa da sua relação.
+        </p>
+      </motion.div>
+
+      {user ? (
+        <motion.form
+          onSubmit={handleSubmit}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center"
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="w-full max-w-4xl mt-12"
         >
-          <h1 className="font-serif text-4xl md:text-5xl text-white">O Encontro de Universos</h1>
-          <p className="text-lg md:text-xl text-[rgb(var(--color-text-muted))] max-w-2xl mx-auto mt-4 leading-relaxed">
-            Descubra os pontos de harmonia e os desafios na sua conexão com outra pessoa através da Sinastria, o mapa da sua relação.
-          </p>
-        </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+            <PersonInputFields 
+              personLabel="Pessoa 1 (Você)" 
+              values={person1Values}
+              errors={errors.person1}
+              onChange={(e) => handleInputChange('person1', e)}
+            />
+            <PersonInputFields 
+              personLabel="Pessoa 2"
+              values={person2Values}
+              errors={errors.person2}
+              onChange={(e) => handleInputChange('person2', e)}
+            />
+          </div>
 
-        {user ? (
-          <motion.form
-            onSubmit={handleSubmit}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="w-full max-w-4xl mt-12"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
-              <PersonInputFields 
-                personLabel="Pessoa 1 (Você)" 
-                values={person1Values}
-                errors={errors.person1}
-                onChange={(e) => handleInputChange('person1', e)}
-              />
-              <PersonInputFields 
-                personLabel="Pessoa 2"
-                values={person2Values}
-                errors={errors.person2}
-                onChange={(e) => handleInputChange('person2', e)}
-              />
-            </div>
-
-            <div className="flex justify-center mt-12">
-              <Button variant="primary" type="submit" disabled={isSubmitting} className="px-10 py-4 text-lg">
-                {isSubmitting ? (
-                  <>
-                    <LoaderCircle className="mr-2 animate-spin" size={20}/>
-                    Analisando Conexão...
-                  </>
-                ) : (
-                  <>
-                    <Heart className="mr-2" size={20}/>
-                    Calcular Conexão
-                  </>
-                )}
-              </Button>
-            </div>
-          </motion.form>
-        ) : (
-          <FeatureGate 
-            title="Recurso Exclusivo para Membros"
-            description="A Sinastria é uma análise profunda que requer uma conta. Crie sua jornada gratuitamente para desbloquear esta e outras funcionalidades."
-          />
-        )}
-      </main>
-
-      <Footer />
-    </div>
+          <div className="flex justify-center mt-12">
+            <Button variant="primary" type="submit" disabled={isSubmitting} className="px-10 py-4 text-lg">
+              {isSubmitting ? (
+                <>
+                  <LoaderCircle className="mr-2 animate-spin" size={20}/>
+                  Analisando Conexão...
+                </>
+              ) : (
+                <>
+                  <Heart className="mr-2" size={20}/>
+                  Calcular Conexão
+                </>
+              )}
+            </Button>
+          </div>
+        </motion.form>
+      ) : (
+        <FeatureGate 
+          title="Recurso Exclusivo para Membros"
+          description="A Sinastria é uma análise profunda que requer uma conta. Crie sua jornada gratuitamente para desbloquear esta e outras funcionalidades."
+        />
+      )}
+    </main>
   );
 };
 
