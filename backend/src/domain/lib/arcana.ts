@@ -1,0 +1,368 @@
+import type { MajorArcana } from '../types';
+
+const MAJOR_ARCANA_DATA: readonly MajorArcana[] = [
+  {
+    "id": 0,
+    "name": "O Louco",
+    "keywords": [
+      "Início",
+      "Espontaneidade",
+      "Potencial",
+      "Salto de fé"
+    ],
+    "description": "O Louco representa o início de uma jornada, cheio de potencial e possibilidades infinitas.",
+    "longDescription": "O Louco é o limiar: antes da forma, antes da escolha, existe o campo puro do potencial. Ele caminha à beira do precipício com uma trouxa leve — não por ignorância, mas por confiança radical no fluxo da vida. Como arquétipo está ligado ao Puer/Anima da psicologia profunda: renovação, criatividade e ousadia para romper padrões. Em leitura prática, convoca a coragem de começar e a necessidade de consciência para não confundir impulso com sabedoria.",
+    "light": "Inicie. Experimente. Aceite a incerteza como terreno fértil.",
+    "shadow": "Imprudência, fuga de responsabilidades ou disperção de energia.",
+    "advice": "Faça um pequeno teste-prático: execute um passo não planejado, avalie o resultado e ajuste antes de avançar."
+  },
+  {
+    "id": 1,
+    "name": "O Mago",
+    "keywords": [
+      "Vontade",
+      "Ação",
+      "Foco",
+      "Manifestação"
+    ],
+    "description": "O Mago é o mestre da manifestação, possuindo todas as ferramentas para transformar ideias em realidade.",
+    "longDescription": "O Mago é o ponto de convergência entre intenção e forma — 'uma mão para o céu, outra para a terra'. Ele domina os quatro elementos, indicando competência técnica e a capacidade de harmonizar espírito e matéria. Psicologicamente, ativa o recurso interno da competência e do engajamento proativo. No uso cotidiano, lembra que ter ferramentas não basta: a excelência vem da disciplina, da ética e do foco aplicados ao talento.",
+    "light": "Clareza de propósito, habilidade para executar, aproveitamento de recursos.",
+    "shadow": "Manipulação, ilusionismo, arrogância técnica sem responsabilidade ética.",
+    "advice": "Defina uma meta clara e identifique 3 ações concretas que você pode fazer esta semana para avançar."
+  },
+  {
+    "id": 2,
+    "name": "A Sacerdotisa",
+    "keywords": [
+      "Intuição",
+      "Silêncio",
+      "Mistério",
+      "Subconsciente"
+    ],
+    "description": "A Sacerdotisa é a guardiã dos segredos e do subconsciente, representando a sabedoria que vem da introspecção.",
+    "longDescription": "A Sacerdotisa senta-se entre pilares, guarda o véu do mistério e convida ao mundo interior. Ela representa o conhecimento que não se revela pela lógica, mas pela experiência contemplativa. É a ponte para o inconsciente: sonhos, símbolos, intuição e memória ancestral. Em leitura prática, pede pausa, escuta e respeito ao ritmo interno antes de agir.",
+    "light": "Acesso à intuição, sensibilidade simbólica, receptividade criativa.",
+    "shadow": "Reclusão, segredo excessivo, passividade que vira inércia.",
+    "advice": "Crie um espaço de silêncio diário (10–20 minutos) para anotar insights e sonhos antes que se percam."
+  },
+  {
+    "id": 3,
+    "name": "A Imperatriz",
+    "keywords": [
+      "Criação",
+      "Nutrição",
+      "Abundância",
+      "Fertilidade"
+    ],
+    "description": "A Imperatriz é a personificação da Mãe Natureza, governando o mundo material, a sensualidade e a criação.",
+    "longDescription": "A Imperatriz é a expressão da fecundidade e do cuidado concreto — a arte de transformar matéria em beleza e vida. Ela liga a criatividade ao corpo: prazer, nutrição, estética e fruto do trabalho são seus reinos. Psicologicamente, ativa a capacidade de gerar e sustentar projetos e relações com ternura ativa.",
+    "light": "Criatividade produtiva, cuidado tangível, prosperidade gerada por atenção e arte.",
+    "shadow": "Cobiça material, acomodação no conforto, superproteção que sufoca o crescimento.",
+    "advice": "Plante um gesto de cuidado semanal (um projeto pequeno, uma rotina de autocuidado) e acompanhe seu crescimento."
+  },
+  {
+    "id": 4,
+    "name": "O Imperador",
+    "keywords": [
+      "Estrutura",
+      "Liderança",
+      "Ordem",
+      "Autoridade"
+    ],
+    "description": "O Imperador representa a autoridade, a estrutura e a ordem, o arquétipo do pai que estabelece regras com lógica.",
+    "longDescription": "Sentado em um trono de pedra, o Imperador é a força que organiza o caos em formas duradouras. Ele simboliza poder institucional, disciplina e responsabilidade estratégica. Mais do que controle, é a habilidade de criar estruturas — legais, emocionais, práticas — que sustentem crescimento e segurança. Em sua melhor expressão, lidera com justiça; no pior, se torna tirania.",
+    "light": "Estruture, proteja e sustente. Liderança responsável e pragmática.",
+    "shadow": "Autoritarismo, rigidez e desconexão emocional.",
+    "advice": "Defina três fronteiras práticas (horário, escopo, regras) para um projeto ou relação e implemente-as por 30 dias."
+  },
+  {
+    "id": 5,
+    "name": "O Hierofante",
+    "keywords": [
+      "Tradição",
+      "Ensino",
+      "Valores",
+      "Instituição"
+    ],
+    "description": "O Hierofante é a ponte entre o divino e o humano, representando tradições e o conhecimento formal.",
+    "longDescription": "O Hierofante (ou Papa) é o transmissor de sabedoria consolidada: ritos, símbolos e práticas que conectam indivíduos a comunidades. Ele personifica ensino, mentorias e sistemas morais. Em leitura prática, convoca o valor do aprendizado respeitado e a busca por orientação estruturada.",
+    "light": "Aprender com mestres, integrar tradições, encontrar pertencimento em práticas estruturadas.",
+    "shadow": "Dogmatismo, conformismo e perda de questionamento crítico.",
+    "advice": "Procure uma fonte de ensino confiável (curso, mentor) e estabeleça uma rotina de estudo orientada."
+  },
+  {
+    "id": 6,
+    "name": "Os Enamorados",
+    "keywords": [
+      "Escolhas",
+      "Vínculos",
+      "Valores",
+      "Relacionamentos"
+    ],
+    "description": "Esta carta simboliza uma encruzilhada, uma escolha importante que precisa ser feita a partir do coração.",
+    "longDescription": "Os Enamorados apontam para decisões que envolvem valores íntimos: união, parceria e integração de polaridades internas. Mais do que romance, é sobre alinhamento de propósito entre escolhas e integridade pessoal. A carta convida a reconhecer quais partes de si pedem união e quais exigem autonomia.",
+    "light": "Vínculos autênticos, escolhas alinhadas com valores pessoais.",
+    "shadow": "Indecisão, busca por aprovação ou sacrifício de si por aceitação.",
+    "advice": "Liste seus três valores principais e avalie se a escolha proposta honra esses valores."
+  },
+  {
+    "id": 7,
+    "name": "O Carro",
+    "keywords": [
+      "Direção",
+      "Conquista",
+      "Vontade",
+      "Autocontrole"
+    ],
+    "description": "O Carro representa a vitória através da força de vontade e do autocontrole para superar obstáculos.",
+    "longDescription": "O Carro mostra um condutor que domina forças opostas para avançar com velocidade e foco. Simboliza disciplina, ambição e a capacidade de dirigir múltiplas energias rumo a um objetivo. No plano psicológico, fala sobre integração de partes conflitantes e triunfo por meio do controle consciente.",
+    "light": "Determinação, controle emocional e progresso visível.",
+    "shadow": "Impulsividade, agressividade ou necessidade de vencer a qualquer custo.",
+    "advice": "Clarifique seu destino (meta concreta) e escolha uma prática diária que mantenha seu foco alinhado."
+  },
+  {
+    "id": 8,
+    "name": "A Justiça",
+    "keywords": [
+      "Equilíbrio",
+      "Verdade",
+      "Causa e Efeito",
+      "Decisão"
+    ],
+    "description": "A Justiça representa a verdade, a clareza e a lei de causa e efeito, exigindo imparcialidade e responsabilidade.",
+    "longDescription": "A Justiça sustenta a ideia de equilíbrio entre ação e consequência. Ela empunha a espada da verdade e a balança da imparcialidade, lembrando que decisões têm custos e retaliações. É a carta da responsabilização ética e da necessidade de escolher com integridade, considerando evidências e efeitos práticos.",
+    "light": "Aja com integridade; assuma as consequências de seus atos.",
+    "shadow": "Viés, parcialidade ou tentativa de manipular resultados.",
+    "advice": "Reúna fatos, liste impactos possíveis e tome decisões com critérios claros e documentados."
+  },
+  {
+    "id": 9,
+    "name": "O Eremita",
+    "keywords": [
+      "Busca",
+      "Introspecção",
+      "Sabedoria",
+      "Isolamento"
+    ],
+    "description": "O Eremita se retira do mundo para buscar a verdade e a sabedoria em seu interior, guiado por sua luz.",
+    "longDescription": "No topo da montanha, o Eremita segura sua luz — o fruto de reflexão e experiência. Ele simboliza a busca madura por sentido, feita através do silêncio e da análise. Afasta-se das distrações para avaliar a jornada e consolidar aprendizados. Em leitura prática, chama por períodos intencionais de estudo e autorreflexão.",
+    "light": "Clareza interior, profundidade de entendimento e orientação autêntica.",
+    "shadow": "Exclusão social, isolamento improdutivo ou orgulho intelectual.",
+    "advice": "Reserve um período de silêncio e escreva as lições que a experiência lhe trouxe; depois compartilhe apenas o essencial."
+  },
+  {
+    "id": 10,
+    "name": "A Roda da Fortuna",
+    "keywords": [
+      "Ciclos",
+      "Mudança",
+      "Destino",
+      "Sorte"
+    ],
+    "description": "A Roda da Fortuna simboliza os ciclos da vida, as mudanças e as reviravoltas do destino.",
+    "longDescription": "A Roda lembra que tudo gira: sucessos, perdas e oportunidades estão sujeitos a ciclos. É uma carta de mudança inevitável, onde a adaptação torna-se habilidade central. No plano prático, recomenda flexibilidade estratégica e prontidão para aproveitar janelas temporais favoráveis.",
+    "light": "Abrace a mudança; prepare-se para aproveitar oportunidades.",
+    "shadow": "Tentar controlar o incontrolável ou sentir-se vítima do acaso.",
+    "advice": "Mapeie seus ciclos (financeiro, emocional, profissional) e identifique quando agir e quando conservar."
+  },
+  {
+    "id": 11,
+    "name": "A Força",
+    "keywords": [
+      "Coragem",
+      "Paciência",
+      "Controle",
+      "Compaixão"
+    ],
+    "description": "A Força é sobre a coragem interior, a paciência e a compaixão para domar seus instintos.",
+    "longDescription": "A Força simboliza o domínio vindo da ternura, não da violência: a mulher que acalenta o leão encarna coragem com compaixão. É controle emocional ativado por coragem suave e resiliência. Psicologicamente, fala da integração entre coragem ativa e sensibilidade ético-emocional.",
+    "light": "Autocontrole compassivo, coragem resiliente e liderança serena.",
+    "shadow": "Repressão de emoções, explosões ou uso de força como intimidação.",
+    "advice": "Pratique confrontar um medo com um gesto compassivo, anotando o impacto emocional e prático."
+  },
+  {
+    "id": 12,
+    "name": "O Enforcado",
+    "keywords": [
+      "Perspectiva",
+      "Sacrifício",
+      "Pausa",
+      "Rendição"
+    ],
+    "description": "O Enforcado representa uma pausa, um momento de rendição para ver o mundo de uma nova perspectiva.",
+    "longDescription": "Suspenso, o Enforcado escolhe a imobilidade para ganhar visão diferente. Seu sacrifício voluntário é método: renuncia para perceber o que passa despercebido pela pressa. Em leituras, indica que a suspensão temporária pode revelar soluções e que o tempo de espera tem valor transformador.",
+    "light": "Nova perspectiva, insights através da pausa consciente.",
+    "shadow": "Estagnação passiva, vitimização ou procrastinação disfarçada de espiritualidade.",
+    "advice": "Faça um experimento: suspenda uma ação pendente por 7 dias e observe que novas informações surgem."
+  },
+  {
+    "id": 13,
+    "name": "A Morte",
+    "keywords": [
+      "Transformação",
+      "Fim",
+      "Renovação",
+      "Desapego"
+    ],
+    "description": "A carta da Morte simboliza o fim de um ciclo, uma transformação profunda e necessária para o novo nascer.",
+    "longDescription": "A Morte é metáfora radical de transformação: o término necessário para que algo novo nasça. Não é morte literal, mas um processo de limpeza e reorganização. Psicologicamente, exige desapego e coragem para abandonar velhos padrões e permitir reorganizações fundamentais.",
+    "light": "Renovação profunda, final que liberta espaço para o novo.",
+    "shadow": "Resistência ao fim, apego a estruturas esgotadas.",
+    "advice": "Identifique o que precisa terminar — relação, projeto, hábito — e trace passos concretos para concluir com honra."
+  },
+  {
+    "id": 14,
+    "name": "A Temperança",
+    "keywords": [
+      "Equilíbrio",
+      "Moderação",
+      "Alquimia",
+      "Paciência"
+    ],
+    "description": "A Temperança é a arte da alquimia e do equilíbrio, misturando opostos para criar um todo harmonioso.",
+    "longDescription": "A Temperança ensina a unir elementos opostos em proporções sábias: é a alquimia prática da vida cotidiana. Indica integração e cura através de paciência, ajuste e experimentação balanceada. No nível pessoal, fala de síntese e maturidade emocional.",
+    "light": "Equilíbrio funcional, capacidade de integrar conflitos com criatividade.",
+    "shadow": "Indecisão por excesso de moderação ou complacência que impede ação.",
+    "advice": "Teste pequenas combinações (rotinas, hábitos) e observe qual mistura produz melhores resultados sustentáveis."
+  },
+  {
+    "id": 15,
+    "name": "O Diabo",
+    "keywords": [
+      "Apego",
+      "Materialismo",
+      "Sombra",
+      "Libertação"
+    ],
+    "description": "O Diabo representa nossos apegos e padrões que nos aprisionam, iluminando nossas sombras para libertação.",
+    "longDescription": "O Diabo revela cadeias criadas por desejo, medo e apego — estruturas internas que se passam por prazer mas escravizam. As correntes, muitas vezes frouxas, indicam que a libertação é possível. A carta convoca honestidade radical sobre dependências e caminhos de libertação ética e prática.",
+    "light": "Reconhecimento honesto das correntes; oportunidade para recuperar agência pessoal.",
+    "shadow": "Negação do problema, autoengano ou gratificações que corroem o projeto de vida.",
+    "advice": "Mapeie um padrão compulsivo (uso, relação, comportamento) e substitua o primeiro passo por um gesto alternativo por 21 dias."
+  },
+  {
+    "id": 16,
+    "name": "A Torre",
+    "keywords": [
+      "Ruptura",
+      "Revelação",
+      "Crise",
+      "Libertação súbita"
+    ],
+    "description": "A Torre é uma crise súbita e inevitável, a destruição de estruturas falsas para abrir caminho para a verdade.",
+    "longDescription": "A Torre explode por um raio que revela alicerces frágeis. É choque que destrói ilusões e obriga a reconstrução sobre bases honestas. Embora doloroso, esse colapso é frequentemente a condição da liberdade verdadeira. Em leitura, fala de eventos abruptos que demandam reavaliação profunda e reconstrução ética.",
+    "light": "Libertação de enganos, oportunidade para reconstruir com mais verdade.",
+    "shadow": "Negação, apego ao que caiu ou tentativa de maquiar a ruína.",
+    "advice": "Após um evento rupturista, identifique três verdades inegociáveis para a reconstrução e aja sobre elas."
+  },
+  {
+    "id": 17,
+    "name": "A Estrela",
+    "keywords": [
+      "Esperança",
+      "Inspiração",
+      "Cura",
+      "Guia"
+    ],
+    "description": "Após a tempestade da Torre, a Estrela surge como um farol de esperança, cura, fé renovada e inspiração.",
+    "longDescription": "A Estrela traz um alívio sereno: cura, reconexão com uma fonte mais ampla e visão restauradora. Ela simboliza esperança prática e inspiração que restaura confiança. É convite para práticas regenerativas e para confiar em processos de cura que são lentos, mas profundos.",
+    "light": "Esperança renovada, prática de autocuidado e criatividade restauradora.",
+    "shadow": "Ilusões que confundem otimismo com evasão da realidade.",
+    "advice": "Adote uma prática diária de nutrição (sono, água, movimento) por 30 dias e registre mudanças sutis."
+  },
+  {
+    "id": 18,
+    "name": "A Lua",
+    "keywords": [
+      "Inconsciente",
+      "Ilusão",
+      "Sonhos",
+      "Intuição"
+    ],
+    "description": "A Lua ilumina o caminho do inconsciente, dos sonhos e das ilusões, uma jornada através de medos ocultos.",
+    "longDescription": "A Lua pinta um cenário noturno onde sombras ganham forma; cavalo e cão indicam instinto e domesticidade em tensão. Ela convoca o trabalho com sonhos, medos e narrativas internas. A carta adverte contra ilusões persuasivas e convida à interpretação simbólica cuidadosa.",
+    "light": "Autorreflexão através de sonhos, criatividade simbólica e insights emocionais.",
+    "shadow": "Confusão, ansiedade amplificada por histórias internas distorcidas.",
+    "advice": "Anote sonhos por duas semanas e procure padrões ou metáforas recorrentes para iluminar conflitos ocultos."
+  },
+  {
+    "id": 19,
+    "name": "O Sol",
+    "keywords": [
+      "Vitalidade",
+      "Alegria",
+      "Sucesso",
+      "Clareza"
+    ],
+    "description": "O Sol representa o sucesso, a alegria e a vitalidade em sua forma mais pura. É a clareza da mente e a celebração da vida.",
+    "longDescription": "O Sol ilumina, aquece e revela o que funciona. É energia vital, confiança e clareza de propósito. Em leituras, anuncia fases de produtividade, reconhecimento e alegria autêntica. A carta também lembra que a autoridade da luz requer responsabilidade: brilhar sem apagar o outro.",
+    "light": "Energia, clareza, progresso e reconhecimento.",
+    "shadow": "Ego inflado, superficialidade na busca por aprovação.",
+    "advice": "Compartilhe sua conquista de forma que reconheça contributos alheios e solidifique relacionamentos."
+  },
+  {
+    "id": 20,
+    "name": "O Julgamento",
+    "keywords": [
+      "Renascimento",
+      "Chamado",
+      "Avaliação",
+      "Perdão"
+    ],
+    "description": "O Julgamento é um chamado para um despertar espiritual, um momento de avaliação, perdão e renascimento.",
+    "longDescription": "O Julgamento convoca a reverência ante a própria evolução: é hora de avaliar, perdoar e responder a um chamado mais alto. Remete a um reexame moral e existencial que pode reorientar o projeto de vida. Psicologicamente, é integração de passado para ressignificação.",
+    "light": "Perdão, renascimento e alinhamento com propósito maior.",
+    "shadow": "Remorso paralisante, julgamento externo que impede ação transformadora.",
+    "advice": "Realize um inventário: liste 3 arrependimentos e escreva ações concretas para reequilibrar cada um."
+  },
+  {
+    "id": 21,
+    "name": "O Mundo",
+    "keywords": [
+      "Conclusão",
+      "Integração",
+      "Realização",
+      "Totalidade"
+    ],
+    "description": "O Mundo representa a conclusão bem-sucedida de um ciclo, a sensação de realização e totalidade.",
+    "longDescription": "O Mundo celebra a integração dos elementos e a conclusão da jornada iniciada pelo Louco. A dança dentro da grinalda é a síntese do aprendizado: plenitude, pertencimento e abertura para novos ciclos. Em leitura prática, indica realização e a possibilidade de partir para uma etapa de maior amplitude.",
+    "light": "Integração, celebração e preparação inteligente para novos começos.",
+    "shadow": "Complacência ou nostalgia que impede a próxima etapa.",
+    "advice": "Formalize aprendizados principais num plano de 90 dias para iniciar um novo ciclo com base sólida."
+  }
+] as const;
+
+
+const letterValues: Record<string, number> = {
+  a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9,
+  j: 1, k: 2, l: 3, m: 4, n: 5, o: 6, p: 7, q: 8, r: 9,
+  s: 1, t: 2, u: 3, v: 4, w: 5, x: 6, y: 7, z: 8,
+};
+
+function reduceNumber(n: number): number {
+  let currentNum = n;
+  while (currentNum > 22) {
+    currentNum = String(currentNum).split('').reduce((sum, digit) => sum + Number(digit), 0);
+  }
+  return currentNum;
+}
+
+export function calculateNameNumber(name: string): number {
+  const normalizedName = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, '');
+  const sum = normalizedName.split('').reduce((acc, char) => acc + (letterValues[char] || 0), 0);
+  return sum;
+}
+
+export function getArcanaByNumber(inputNumber: number): MajorArcana {
+  const reducedNum = reduceNumber(inputNumber);
+  const arcanaIndex = reducedNum === 22 ? 0 : reducedNum;
+  
+  const baseArcana = MAJOR_ARCANA_DATA.find(arcana => arcana.id === arcanaIndex);
+
+  if (!baseArcana) {
+    throw new Error(`Arcano não encontrado para o número reduzido: ${reducedNum}`);
+  }
+
+  return baseArcana;
+}
