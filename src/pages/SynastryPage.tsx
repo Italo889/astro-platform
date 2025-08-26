@@ -8,7 +8,7 @@ import { useSynastryForm } from '../hooks/useSynastryForm';
 import { useAuthStore } from '../store/authStore';
 import { FeatureGate } from '../components/auth/FeatureGate';
 
-// O sub-componente de input pode continuar vivendo aqui, pois é específico desta página
+// O sub-componente PersonInputFields pode continuar aqui
 const PersonInputFields: FC<{ 
   personLabel: string;
   values: Record<string, string>;
@@ -49,11 +49,11 @@ const SynastryPage: FC = () => {
     handleSubmit,
   } = useSynastryForm();
 
+  // Verificamos se o usuário está logado
   const user = useAuthStore((state) => state.user);
   
   return (
-    // Os componentes de Layout como Header, Footer e BackgroundEffects foram removidos.
-    // O RootLayout agora cuida deles.
+    // O RootLayout já cuida do container principal, Header e Footer
     <main className="flex flex-col flex-1 items-center px-4 md:px-6 py-16">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -67,6 +67,7 @@ const SynastryPage: FC = () => {
         </p>
       </motion.div>
 
+      {/* Renderização condicional: Mostra o formulário para usuários logados, e o "portal" para visitantes */}
       {user ? (
         <motion.form
           onSubmit={handleSubmit}
