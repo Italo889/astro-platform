@@ -1,0 +1,45 @@
+// Este é seu Datasource. Verifique se corresponde ao seu banco de dados (ex: postgresql, mysql).
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// O gerador para o Prisma Client.
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modelo para os Usuários da plataforma.
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String   // No futuro, guardaremos o hash da senha aqui.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relação: Um usuário pode ter muitos relatórios.
+  reports   Report[]
+}
+
+// Modelo para os Relatórios Pessoais gerados.
+model Report {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  
+  // Usamos o tipo `Json` para guardar o objeto complexo do relatório.
+  // Isso nos dá flexibilidade máxima para evoluir o formato do relatório no futuro.
+  content   Json
+  
+  // Relação: Cada relatório pertence a um usuário.
+  owner     User     @relation(fields: [ownerId], references: [id])
+  ownerId   String
+}
+
+// Adicione este modelo ao seu schema.prisma
+
+model Subscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
