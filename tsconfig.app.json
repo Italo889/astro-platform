@@ -29,5 +29,5 @@
       "@/*": ["*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "backend/src/domain/types.ts", "backend/src/domain/lib/numerology.ts", "backend/src/domain/lib/synastry.ts", "backend/src/plugins"]
 }
