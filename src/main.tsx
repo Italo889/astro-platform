@@ -2,33 +2,50 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// NOVO: Importando as ferramentas do React Router
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Importando os estilos globais
 import './index.css';
 import './styles/global.css';
 import './styles/animations.css';
 
-// Importando nossas páginas
+// Layouts e Páginas
+import { RootLayout } from './components/layout/RootLayout';
 import LandingPage from './pages/LandingPage';
 import ReportPage from './pages/ReportPage';
+import SynastryPage from './pages/SynastryPage';
+import SynastryReportPage from './pages/SynastryReportPage';
+import DashboardPage from './pages/DashboardPage';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
-// NOVO: Definindo o mapa de rotas do nosso site
+const queryClient = new QueryClient();
+
 const router = createBrowserRouter([
   {
-    path: "/", // A rota raiz (ex: www.arcano.com)
-    element: <LandingPage />,
-  },
-  {
-    path: "/resultado", // A rota para a página de resultados
-    element: <ReportPage />,
-  },
+    // A rota "pai" agora usa nosso RootLayout
+    element: <RootLayout />,
+    // Todas as nossas páginas agora são filhas deste layout
+    children: [
+      { path: "/", element: <LandingPage /> },
+      { path: "/resultado", element: <ReportPage /> },
+      { path: "/resultado/:reportId", element: <ReportPage /> },
+      { path: "/sinastria", element: <SynastryPage /> },
+      { path: "/sinastria/resultado", element: <SynastryReportPage /> },
+      {
+        // O grupo de rotas protegidas também fica aqui dentro
+        element: <ProtectedRoute />,
+        children: [
+          { path: "/dashboard", element: <DashboardPage /> },
+        ],
+      },
+    ]
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* NOVO: Usamos o RouterProvider para habilitar a navegação em toda a aplicação */}
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </React.StrictMode>,
 );
