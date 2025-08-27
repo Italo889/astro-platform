@@ -1,0 +1,41 @@
+// Este mapa associa o ID do arcano ao caminho da imagem na pasta /public
+export const arcanaImageMap: Record<number, string> = {
+  0: '/images/arcana/0.webp',
+  1: '/images/arcana/1.webp',
+  2: '/images/arcana/2.webp',
+  3: '/images/arcana/3.webp',
+  4: '/images/arcana/4.webp',
+  5: '/images/arcana/5.webp',
+  6: '/images/arcana/6.webp',
+  7: '/images/arcana/7.webp',
+  8: '/images/arcana/8.webp',
+  9: '/images/arcana/9.webp',
+  10: '/images/arcana/10.webp',
+  11: '/images/arcana/11.webp',
+  12: '/images/arcana/12.webp',
+  13: '/images/arcana/13.webp',
+  14: '/images/arcana/14.webp',
+  15: '/images/arcana/15.webp',
+  16: '/images/arcana/16.webp',
+  17: '/images/arcana/17.webp',
+  18: '/images/arcana/18.webp',
+  19: '/images/arcana/19.webp',
+  20: '/images/arcana/20.webp',
+  21: '/images/arcana/21.webp',
+};
+
+// Mapa para os signos (certifique-se que a chave é idêntica ao nome do signo em seus dados)
+export const signImageMap: Record<string, string> = {
+  'Áries': '/images/signs/aries.webp',
+  'Touro': '/images/signs/touro.webp',
+  'Gêmeos': '/images/signs/gemeos.webp',
+  'Câncer': '/images/signs/cancer.webp',
+  'Leão': '/images/signs/leao.webp',
+  'Virgem': '/images/signs/virgem.png',
+  'Libra': '/images/signs/libra.webp',
+  'Escorpião': '/images/signs/escorpiao.webp',
+  'Sagitário': '/images/signs/sagitario.webp',
+  'Capricórnio': '/images/signs/capricornio.webp',
+  'Aquário': '/images/signs/aquario.webp',
+  'Peixes': '/images/signs/peixes.webp',
+};
