@@ -1,55 +1,62 @@
-import type { BirthInput, Report, NumerologyNumbers, ArcanaAnalysis, AstrologyResult } from "./types";
-import { computeSunSign } from "./lib/astro";
-import { lifePathFromDate, destinyFromName } from "./lib/numerology";
+import type { BirthInput, PersonalReport, NumerologyNumbers, ArcanaAnalysis, AstrologyResult } from "./types";
+import { calculateAstrologicalChart, getCoordinatesForPlace } from "./lib/astro";
+import { sumAllDigits, sumFromName, sumDateAsIntegers, calculateAnnualSum, reduceToSingleDigit, reduceToTarotNumber } from "./lib/numerology";
 import { getArcanaByNumber } from "./lib/arcana";
 
-// No futuro, isso pode ser uma opção que o usuário escolhe na interface.
-const ARCANA_MAPPING_STRATEGY = "foolZero";
-const NUMEROLOGY_METHOD_STRATEGY = "pitagorico";
-
-/**
- * O motor principal que orquestra todos os cálculos para gerar um relatório completo.
- * @param input - Os dados de nascimento fornecidos pelo usuário.
- * @returns Um objeto Report completo e tipado.
- */
-export function computeReport(input: BirthInput): Report {
-  // 1. ASTROLOGIA (Simples, por enquanto)
-  const astrology: AstrologyResult = computeSunSign(input.birthDate);
-
-  // 2. NUMEROLOGIA: Calculamos todos os números e montamos o objeto NumerologyNumbers
-  const numerology: NumerologyNumbers = {
-    lifePath: lifePathFromDate(input.birthDate),
-    destiny: input.name ? destinyFromName(input.name) : undefined,
-    // (Placeholders para futuras expansões)
-    // soulUrge: input.name ? soulUrgeFromName(input.name) : undefined,
-    // personality: input.name ? personalityFromName(input.name) : undefined,
-  };
-
-  // 3. ARCANOS: Usamos getArcanaByNumber para cada número e montamos o objeto ArcanaAnalysis
-  const arcana: ArcanaAnalysis = {
-    lifePathArcana: getArcanaByNumber(numerology.lifePath),
-    destinyArcana: numerology.destiny ? getArcanaByNumber(numerology.destiny) : undefined,
-    method: NUMEROLOGY_METHOD_STRATEGY,
-    mapping: ARCANA_MAPPING_STRATEGY,
-  };
-  
-  // 4. SUMMARY: Criamos um resumo mais didático e inspirador, como planejado.
-  let summary = `Seu Sol em ${astrology.sun} ilumina sua identidade. Seu Caminho de Vida, guiado pelo número ${numerology.lifePath}, revela sua jornada e missão principal, representada pelo arcano **${arcana.lifePathArcana.name}**.`;
-  if (numerology.destiny && arcana.destinyArcana) {
-    summary += ` Seu nome revela um Número de Destino ${numerology.destiny}, um chamado para expressar a energia do arcano **${arcana.destinyArcana.name}** através de seus talentos.`;
+export async function computeReport(input: BirthInput): Promise<PersonalReport> {
+  if (!input.birthTime || !input.birthPlace) {
+    throw new Error("Hora e local de nascimento são necessários para um relatório completo.");
   }
   
-  // 5. RELATÓRIO FINAL: Montamos o objeto Report completo, com todas as chaves corretas.
-  const finalReport: Report = {
-    astrology,
-    numerology,
-    arcana,
-    summary,
-  };
+  const coords = await getCoordinatesForPlace(input.birthPlace);
+  const birthDateTime = new Date(`${input.birthDate}T${input.birthTime}:00`);
+  const astrology = calculateAstrologicalChart(birthDateTime, coords);
+  
+  // --- CÁLCULOS DE TARÔ ---
 
-  return finalReport;
+  // 1. Somas Brutas
+  const personalSum = sumAllDigits(input.birthDate);
+  const greerSum = sumDateAsIntegers(input.birthDate);
+  const annualSum = calculateAnnualSum(input.birthDate);
+  const destinySum = input.name ? sumFromName(input.name) : undefined;
+
+  // 2. Reduções Específicas
+  const personalNumber = reduceToTarotNumber(personalSum);
+  const personalityNumber = reduceToTarotNumber(greerSum);
+  const soulNumber = reduceToSingleDigit(personalityNumber); // A Alma é a redução da Personalidade
+  const annualNumber = reduceToTarotNumber(annualSum);
+  const destinyNumber = destinySum ? reduceToTarotNumber(destinySum) : undefined;
+  
+  // 3. Encontrando os Arcanos
+  const arcana: ArcanaAnalysis = {
+    personalArcana: getArcanaByNumber(personalNumber),
+    personalityArcana: getArcanaByNumber(personalityNumber),
+    soulArcana: getArcanaByNumber(soulNumber),
+    annualArcana: getArcanaByNumber(annualNumber),
+    destinyArcana: destinyNumber ? getArcanaByNumber(destinyNumber) : undefined,
+  };
+  
+  // 4. Montando o objeto de Numerologia final
+  const numerology: NumerologyNumbers = {
+    personalNumber: arcana.personalArcana.id,
+    personalityNumber: arcana.personalityArcana.id,
+    soulNumber: arcana.soulArcana.id,
+    annualNumber: arcana.annualArcana.id,
+    destinyNumber: arcana.destinyArcana?.id,
+  };
+  
+  // 5. SUMMARY DINÂMICO E CORRIGIDO
+  const currentYear = new Date().getFullYear();
+  let summary = `Sua identidade fundamental é moldada pelo Arcano Pessoal **${arcana.personalArcana.name} (${arcana.personalArcana.id})**. Astrologicamente, seu Sol em ${astrology.sun}, Lua em ${astrology.moon} e Ascendente em ${astrology.ascendant} formam a tríade da sua personalidade.`;
+  summary += ` O método Greer revela sua **Personalidade (${arcana.personalityArcana.id})**, o arcana **${arcana.personalityArcana.name}**, como seu grande desafio transformador, e sua **Alma (${arcana.soulArcana.id})**, o arcana **${arcana.soulArcana.name}**, como a lição central.`;
+  if (arcana.destinyArcana) {
+    summary += ` Pelo seu nome, você expressa a energia do Arcano de Destino **${arcana.destinyArcana.name} (${arcana.destinyArcana.id})**.`;
+  }
+  summary += ` Para o ano de ${currentYear}, sua energia de aprendizado e desenvolvimento será a do Arcano **${arcana.annualArcana.name} (${arcana.annualArcana.id})**.`;
+  
+  // 6. RELATÓRIO FINAL
+  return { astrology, numerology, arcana, summary };
 }
 
-
-// NOVO: Re-exportando o motor de Sinastria para centralizar o acesso
+// Re-exportar o motor de Sinastria para manter o acesso centralizado
 export { computeSynastry } from './lib/synastry';
