@@ -1,14 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Report, BirthInput } from '../domain/types';
-
-// O import de 'computeReport' foi removido.
+// CORREÇÃO: Usando o tipo 'PersonalReport' que é o nosso padrão final.
+import type { PersonalReport, BirthInput } from '../domain/types';
 
 interface ReportState {
   input: BirthInput | null;
-  report: Report | null;
-  // Ação agora apenas define o estado com dados pré-calculados.
-  setReport: (report: Report, input: BirthInput) => void;
+  report: PersonalReport | null;
+  setReport: (report: PersonalReport, input: BirthInput) => void;
   clearReport: () => void;
 }
 
@@ -25,7 +23,7 @@ export const useReportStore = create<ReportState>()(
       clearReport: () => set({ report: null, input: null }),
     }),
     {
-      name: 'arcan-report-storage',
+      name: 'arcan-report-storage', // Nome da chave no localStorage
     }
   )
 );
