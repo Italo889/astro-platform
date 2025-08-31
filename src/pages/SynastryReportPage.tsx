@@ -3,8 +3,6 @@
 import type { FC } from 'react';
 import { useSynastryStore } from '../store/synastryStore';
 import { Link } from 'react-router-dom';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
 import { BackgroundEffects } from '../components/layout/BackgroundEffects';
 import { FileQuestion, TrendingUp, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/Button';
@@ -36,7 +34,6 @@ const SynastryReportPage: FC = () => {
     return (
       <div className="relative flex min-h-screen flex-col bg-[#161221] overflow-hidden text-white">
         <BackgroundEffects />
-        <Header />
         <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
           <FileQuestion size={48} className="text-accent/50 mb-4" />
           <h1 className="font-serif text-3xl text-white">Ops! Nenhum relatório encontrado.</h1>
@@ -49,7 +46,6 @@ const SynastryReportPage: FC = () => {
             </Button>
           </Link>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -57,7 +53,6 @@ const SynastryReportPage: FC = () => {
   return (
     <div className="relative flex min-h-screen flex-col bg-[#161221] overflow-hidden text-white">
       <BackgroundEffects />
-      <Header />
       <main className="flex-1 px-4 md:px-6 py-16">
         <div className="max-w-4xl w-full mx-auto space-y-12">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
@@ -73,7 +68,6 @@ const SynastryReportPage: FC = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
