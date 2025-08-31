@@ -43,3 +43,17 @@ model Subscriber {
   email     String   @unique
   createdAt DateTime @default(now())
 }
+
+model City {
+  id        Int     @id @default(autoincrement()) // ID interno do nosso banco
+  geonameId Int     @unique // ID original do GeoNames
+  name      String  // Nome principal (UTF-8)
+  asciiName String  @db.Text // Nome sem acentos, ideal para buscas
+  latitude  Float
+  longitude Float
+  countryCode String  @db.VarChar(2)
+  admin1Code  String? @db.VarChar(20) // Código do estado (ex: RJ, SP)
+  population  BigInt
+
+  @@index([asciiName])
+}
