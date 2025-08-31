@@ -1,14 +1,12 @@
-// =========================================================================
-// TIPOS DE CONFIGURAÇÃO E ENUMS (O que o front-end precisa saber)
-// =========================================================================
+// frontend/src/domain/types.ts
 
 export type SunSignName =
   | "Áries" | "Touro" | "Gêmeos" | "Câncer" | "Leão" | "Virgem" | "Libra" 
   | "Escorpião" | "Sagitário" | "Capricórnio" | "Aquário" | "Peixes";
 
-// =========================================================================
-// TIPOS DE DADOS DO DOMÍNIO (Estruturas que a UI renderiza)
-// =========================================================================
+export type ChineseZodiacSign = 
+  | "Rato" | "Boi" | "Tigre" | "Coelho" | "Dragão" | "Serpente" 
+  | "Cavalo" | "Cabra" | "Macaco" | "Galo" | "Cão" | "Porco";
 
 export interface MajorArcana {
   readonly id: number;
@@ -21,35 +19,59 @@ export interface MajorArcana {
   readonly advice: string;
 }
 
-// =========================================================================
-// TIPOS DE RELATÓRIO (O que a API retorna)
-// =========================================================================
+// --- ESTRUTURA DE ASTROLOGIA ATUALIZADA ---
 
+// NOVO: Define a estrutura para um planeta, com signo, casa e posição.
+export interface PlanetInfo {
+  sign: SunSignName;
+  house: number;
+  longitude: number;
+}
+
+// ATUALIZADO: Agora reflete os dados ricos que o backend envia.
 export interface AstrologyResult {
-  sun: SunSignName; // CORRIGIDO: O sol é diretamente o nome do signo.
-  moon?: SunSignName;
-  ascendant?: SunSignName;
+  sun: PlanetInfo;
+  moon: PlanetInfo;
+  mercury: PlanetInfo;
+  venus: PlanetInfo;
+  mars: PlanetInfo;
+  jupiter: PlanetInfo;
+  saturn: PlanetInfo;
+  
+  ascendant: {
+    sign: SunSignName;
+    longitude: number;
+  };
+
+  houseCusps: {
+    [house: number]: number;
+  };
+  
+  chineseZodiac: ChineseZodiacSign;
+}
+
+// --- O RESTO DOS SEUS TIPOS (JÁ ESTAVAM CORRETOS) ---
+
+export interface ArcanaAnalysis {
+  personalArcana: MajorArcana;
+  personalityArcana: MajorArcana;
+  soulArcana: MajorArcana;
+  annualArcana: MajorArcana;
+  destinyArcana?: MajorArcana;
+  cabalisticNameArcana?: MajorArcana;
+  gematriaNameArcana?: MajorArcana;
 }
 
 export interface NumerologyNumbers {
-  lifePath: number;
-  destiny?: number;
-  soulUrge?: number;
-  personality?: number;
+  personalNumber: number;
+  personalityNumber: number;
+  soulNumber: number;
+  annualNumber: number;
+  destinyNumber?: number;
+  cabalisticNameNumber?: number;
+  gematriaNameNumber?: number;
 }
 
-export interface ArcanaAnalysis {
-  lifePathArcana: MajorArcana;
-  personalArcana: MajorArcana; // ADICIONADO: Essencial para a "Tríade de Poder".
-  destinyArcana?: MajorArcana;
-  soulUrgeArcana?: MajorArcana;
-  personalityArcana?: MajorArcana;
-}
-
-/**
- * O Relatório Pessoal completo, como retornado pela API de cálculo
- * ou dentro do campo 'content' de um relatório salvo.
- */
 export interface PersonalReport {
   astrology: AstrologyResult;
   numerology: NumerologyNumbers;
@@ -57,25 +79,43 @@ export interface PersonalReport {
   summary: string;
 }
 
-/**
- * O Relatório de Sinastria completo.
- */
+export interface CompatibilityAspect {
+  title: string;
+  harmonyScore: number;
+  summary: string;
+  details: string;
+};
+
 export interface SynastryReport {
   person1Name: string;
   person2Name: string;
   overallHarmony: number;
-  // ...outros campos da sinastria
-}
+  sunSignAspect: CompatibilityAspect;
+  lifePathAspect: CompatibilityAspect;
+  archetypeAspect: CompatibilityAspect; 
+};
 
-/**
- * ADICIONADO: O tipo mais importante. Representa um relatório
- * como ele existe no banco de dados e é retornado pelas rotas GET.
- */
 export interface SavedReport {
   id: string;
   userId: string;
   createdAt: string;
   updatedAt: string;
-  // O 'content' pode ser um dos dois tipos de relatório
   content: PersonalReport | SynastryReport; 
+}
+
+export type BirthInput = {
+  name: string;
+  birthDate: string;
+  birthTime: string;
+  birthPlace: string;
+};
+
+// NOVO: Adicionado para manter a consistência com o backend
+export interface BirthDetails {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  timezoneOffset: number;
 }

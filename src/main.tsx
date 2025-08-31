@@ -1,5 +1,3 @@
-// src/main.tsx
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -16,30 +14,29 @@ import ReportPage from './pages/ReportPage';
 import SynastryPage from './pages/SynastryPage';
 import SynastryReportPage from './pages/SynastryReportPage';
 import DashboardPage from './pages/DashboardPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'; // <-- IMPORTAÇÃO
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
-    // A rota "pai" agora usa nosso RootLayout
     element: <RootLayout />,
-    // Todas as nossas páginas agora são filhas deste layout
     children: [
-      { path: "/", element: <LandingPage /> },
-      { path: "/resultado", element: <ReportPage /> },
-      { path: "/resultado/:reportId", element: <ReportPage /> },
-      { path: "/sinastria", element: <SynastryPage /> },
-      { path: "/sinastria/resultado", element: <SynastryReportPage /> },
+      { path: '/', element: <LandingPage /> },
+      { path: '/resultado', element: <ReportPage /> },
+      { path: '/resultado/:reportId', element: <ReportPage /> },
+      { path: '/sinastria', element: <SynastryPage /> },
+      { path: '/sinastria/resultado', element: <SynastryReportPage /> },
+      { path: '/politica-de-privacidade', element: <PrivacyPolicyPage /> }, // <-- NOVA ROTA
       {
-        // O grupo de rotas protegidas também fica aqui dentro
         element: <ProtectedRoute />,
         children: [
-          { path: "/dashboard", element: <DashboardPage /> },
+          { path: '/dashboard', element: <DashboardPage /> },
         ],
       },
-    ]
-  }
+    ],
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

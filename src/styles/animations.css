@@ -39,3 +39,15 @@
 .animate-breathing-light {
   animation: breathing-light 5s ease-in-out infinite;
 }
+
+/* Adicione ao final de src/styles/animations.css */
+
+@keyframes breathing-light {
+  0% { transform: scale(0.95); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 0.9; }
+  100% { transform: scale(0.95); opacity: 0.6; }
+}
+
+.animate-breathing-light {
+  animation: breathing-light 8s ease-in-out infinite;
+}

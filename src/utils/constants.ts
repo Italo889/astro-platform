@@ -1,12 +1,30 @@
-// src/utils/constants.ts
-
-// Este array define a estrutura do nosso formulário.
-// Mantê-lo aqui facilita a manutenção e o reuso em outros lugares, se necessário.
 export const formFields = [
-  { name: "nome", placeholder: "Nome Completo" },
-  { name: "dataNascimento", placeholder: "Data de Nascimento" },
-  { name: "horaNascimento", placeholder: "Hora de Nascimento" },
-  { name: "localNascimento", placeholder: "Cidade e Estado de Nascimento" },
+  {
+    id: 'nome', // Usando 'id' como o nome do campo
+    label: 'Nome Completo',
+    type: 'text',
+    placeholder: 'Seu nome de batismo',
+    required: true, // <-- Esta propriedade é usada para a validação
+  },
+  {
+    id: 'dataNascimento',
+    label: 'Data de Nascimento',
+    type: 'text',
+    placeholder: 'DD/MM/AAAA',
+    required: true,
+  },
+  {
+    id: 'horaNascimento',
+    label: 'Hora de Nascimento (HH:MM)',
+    type: 'text',
+    placeholder: 'Ex: 14:30',
+    required: true,
+  },
+  {
+    id: 'localNascimento',
+    label: 'Local de Nascimento',
+    type: 'text',
+    placeholder: 'Cidade, Estado (Ex: Rio de Janeiro, RJ)',
+    required: true,
+  }
 ];
-
-// Poderíamos adicionar outras constantes do projeto aqui no futuro.
