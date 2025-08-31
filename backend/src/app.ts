@@ -5,12 +5,13 @@ import helmet from "@fastify/helmet";
 import dotenv from "dotenv";
 
 import { prisma } from "./prisma";
-import authPlugin from "./plugins/authPlugin"; // NOVO
+import authPlugin from "./plugins/authPlugin";
 import { userRoutes } from "./routes/userRoutes";
-import { reportRoutes } from "./routes/reportRoutes"; // NOVO
-import { calculationRoutes } from "./routes/calculationRoutes"; // NOVO
+import { reportRoutes } from "./routes/reportRoutes"; 
+import { calculationRoutes } from "./routes/calculationRoutes";
 import { synastryRoutes } from "./routes/synastryRoutes";
-import { newsletterRoutes } from './routes/newsletterRoutes'; // NOVO
+import { newsletterRoutes } from './routes/newsletterRoutes'; 
+
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ const server = Fastify({ logger: true });
 // --- Plugins (Middleware) ---
 server.register(cors);
 server.register(helmet);
-server.register(authPlugin); // NOVO: Registrando nosso guardião
+server.register(authPlugin); 
 
 // --- Rotas ---
 server.get("/", async () => {
@@ -27,10 +28,12 @@ server.get("/", async () => {
 });
 
 server.register(userRoutes, { prefix: '/users' });
-server.register(reportRoutes, { prefix: '/reports' }); // NOVO: Registrando as rotas de relatório
+server.register(reportRoutes, { prefix: '/reports' });
 server.register(calculationRoutes, { prefix: '/calculate' });
 server.register(synastryRoutes, { prefix: '/calculate/synastry' });
-server.register(newsletterRoutes, { prefix: '/newsletter' }); // NOVO
+server.register(newsletterRoutes, { prefix: '/newsletter' });
+
+
 
 // --- Inicialização do Servidor ---
 const start = async () => {
