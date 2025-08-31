@@ -1,55 +1,126 @@
-// src/domain/lib/astro.ts
+import swisseph from 'swisseph';
+import path from 'path';
+import type { SunSignName, ChineseZodiacSign, AstrologyResult, BirthDetails, PlanetInfo } from '../types';
+import { prisma } from '../../prisma';
 
-import type { AstrologyResult, SunSign } from '../../../backend/src/domain/types';
+// --- Interfaces, Tipos e Constantes ---
+interface Coordinates { lat: number; lon: number; }
+const ZODIAC: SunSignName[] = ["Áries", "Touro", "Gêmeos", "Câncer", "Leão", "Virgem", "Libra", "Escorpião", "Sagitário", "Capricórnio", "Aquário", "Peixes"];
+const PLANETS = { sun: swisseph.SE_SUN, moon: swisseph.SE_MOON, mercury: swisseph.SE_MERCURY, venus: swisseph.SE_VENUS, mars: swisseph.SE_MARS, jupiter: swisseph.SE_JUPITER, saturn: swisseph.SE_SATURN };
+const CHINESE_ZODIAC: ChineseZodiacSign[] = ["Rato", "Boi", "Tigre", "Coelho", "Dragão", "Serpente", "Cavalo", "Cabra", "Macaco", "Galo", "Cão", "Porco"];
+const LUNAR_NEW_YEAR_START: Record<number, string> = { 1990: '01-27', 1991: '02-15', 1992: '02-04', 1993: '01-23', 1994: '02-10', 1995: '01-31', 1996: '02-19', 1997: '02-07', 1998: '01-28', 1999: '02-16', 2000: '02-05', 2001: '01-24', 2002: '02-12', 2003: '02-01', 2004: '01-22' };
+const stateCodeMap: Record<string, string> = { 'AC': '01', 'AL': '02', 'AP': '03', 'AM': '04', 'BA': '05', 'CE': '06', 'DF': '07', 'ES': '08', 'GO': '09', 'MA': '10', 'MT': '11', 'MS': '12', 'MG': '13', 'PA': '14', 'PB': '15', 'PR': '16', 'PE': '17', 'PI': '18', 'RJ': '21', 'RN': '22', 'RS': '23', 'RO': '24', 'RR': '25', 'SC': '26', 'SP': '27', 'SE': '28', 'TO': '29' };
 
-// O tipo de dados para nossos ranges, inferido do 'as const'
-type SignRange = {
-  readonly sign: SunSign;
-  readonly from: string; // MM-DD
-  readonly to: string;   // MM-DD
-};
+// --- Configuração da swisseph ---
+const ephePath = path.join(process.cwd(), 'node_modules', 'swisseph', 'ephe');
+swisseph.swe_set_ephe_path(ephePath);
 
-// A estrutura de dados está perfeita.
-const ranges: readonly SignRange[] = [
-  { sign: "Áries",       from: "03-21", to: "04-19" },
-  { sign: "Touro",       from: "04-20", to: "05-20" },
-  { sign: "Gêmeos",      from: "05-21", to: "06-20" },
-  { sign: "Câncer",      from: "06-21", to: "07-22" },
-  { sign: "Leão",        from: "07-23", to: "08-22" },
-  { sign: "Virgem",      from: "08-23", to: "09-22" },
-  { sign: "Libra",       from: "09-23", to: "10-22" },
-  { sign: "Escorpião",   from: "10-23", to: "11-21" },
-  { sign: "Sagitário",   from: "11-22", to: "12-21" },
-  { sign: "Capricórnio", from: "12-22", to: "01-19" },
-  { sign: "Aquário",     from: "01-20", to: "02-18" },
-  { sign: "Peixes",      from: "02-19", to: "03-20" },
-] as const;
+// --- Funções Auxiliares ---
 
-// A sua função 'inRange' é muito elegante e funciona perfeitamente para a comparação de strings.
-function inRange(md: string, from: string, to: string): boolean {
-  // Se o 'from' é menor que o 'to', é um intervalo normal (ex: 03-21 a 04-19).
-  // Se não, é um intervalo que cruza o ano (Capricórnio: 12-22 a 01-19).
-  return from <= to ? (md >= from && md <= to) : (md >= from || md <= to);
+function getSignFromLongitude(lon: number): SunSignName {
+  const normalizedLon = (lon + 360) % 360;
+  return ZODIAC[Math.floor(normalizedLon / 30)];
 }
 
-/**
- * Calcula o signo solar a partir de uma data de nascimento no formato ISO.
- * @param isoBirthDate - A data no formato "YYYY-MM-DD".
- * @returns Um objeto AstrologyResult contendo o signo solar.
- */
-export function computeSunSign(isoBirthDate: string): AstrologyResult {
-  // CORREÇÃO: Extraímos o mês e o dia diretamente da string,
-  // evitando completamente o objeto Date e seus problemas de fuso horário.
-  // "1998-09-14" -> "09-14"
-  const md = isoBirthDate.substring(5);
+function getChineseZodiacSign(utcDate: Date): ChineseZodiacSign {
+  const year = utcDate.getUTCFullYear();
+  const monthDay = `${String(utcDate.getUTCMonth() + 1).padStart(2, '0')}-${String(utcDate.getUTCDate()).padStart(2, '0')}`;
+  const birthYear = (LUNAR_NEW_YEAR_START[year] && monthDay < LUNAR_NEW_YEAR_START[year]) ? year - 1 : year;
+  return CHINESE_ZODIAC[(birthYear - 4) % 12];
+}
 
-  const hit = ranges.find(r => inRange(md, r.from, r.to));
+function getHouseForPlanet(planetLon: number, houseCusps: number[]): number {
+  const normalizedLon = (planetLon + 360) % 360;
+  for (let i = 0; i < 12; i++) {
+    const cuspStart = (houseCusps[i] + 360) % 360;
+    const cuspEnd = (houseCusps[(i + 1) % 12] + 360) % 360;
+    if (cuspStart < cuspEnd) {
+      if (normalizedLon >= cuspStart && normalizedLon < cuspEnd) {
+        return i + 1;
+      }
+    } else {
+      if (normalizedLon >= cuspStart || normalizedLon < cuspEnd) {
+        return i + 1;
+      }
+    }
+  }
+  return 12; // Fallback
+}
 
-  // Adicionando uma verificação de segurança para o caso de não encontrar
-  // (substitui o '!' para um código mais robusto).
-  if (!hit) {
-    throw new Error(`Não foi possível determinar o signo para a data: ${isoBirthDate}`);
+export async function getCoordinatesForPlace(place: string): Promise<Coordinates> {
+    const placeParts = place.split(',').map(p => p.trim());
+    const cityName = placeParts[0];
+    const stateAbbreviation = placeParts[1] || null;
+    const whereClause: any = { asciiName: { contains: cityName, mode: 'insensitive' } };
+    if (stateAbbreviation) { const geoNamesCode = stateCodeMap[stateAbbreviation.toUpperCase()]; if (geoNamesCode) whereClause.admin1Code = geoNamesCode; }
+    const city = await prisma.city.findFirst({ where: whereClause, orderBy: { population: 'desc' } });
+    if (!city) { throw new Error(`Localidade não encontrada: ${place}`); }
+    return { lat: city.latitude, lon: city.longitude };
+}
+
+// --- Função Principal de Cálculo Astrológico ---
+
+export function calculateAstrologicalChart(birthDetails: BirthDetails, coords: Coordinates): AstrologyResult {
+  const utcDate = new Date(Date.UTC(birthDetails.year, birthDetails.month - 1, birthDetails.day, birthDetails.hour - birthDetails.timezoneOffset, birthDetails.minute));
+
+  if (isNaN(utcDate.getTime())) {
+    throw new Error('Data de nascimento inválida.');
   }
 
-  return { sun: hit.sign };
+  const julianDayUT = swisseph.swe_utc_to_jd(utcDate.getUTCFullYear(), utcDate.getUTCMonth() + 1, utcDate.getUTCDate(), utcDate.getUTCHours(), utcDate.getUTCMinutes(), 0, swisseph.SE_GREG_CAL).julianDayUT;
+  const flag = swisseph.SEFLG_SPEED;
+
+  const housesResult = swisseph.swe_houses(julianDayUT, coords.lat, coords.lon, 'P');
+  if ('error' in housesResult) {
+      throw new Error(`Erro da swisseph: ${housesResult.error}`);
+  }
+  const ascendantLon = housesResult.ascendant;
+  const houseCuspsArray = housesResult.house;
+
+  const sun = swisseph.swe_calc_ut(julianDayUT, PLANETS.sun, flag);
+  const moon = swisseph.swe_calc_ut(julianDayUT, PLANETS.moon, flag);
+  const mercury = swisseph.swe_calc_ut(julianDayUT, PLANETS.mercury, flag);
+  const venus = swisseph.swe_calc_ut(julianDayUT, PLANETS.venus, flag);
+  const mars = swisseph.swe_calc_ut(julianDayUT, PLANETS.mars, flag);
+  const jupiter = swisseph.swe_calc_ut(julianDayUT, PLANETS.jupiter, flag);
+  const saturn = swisseph.swe_calc_ut(julianDayUT, PLANETS.saturn, flag);
+
+  return {
+    sun: { sign: getSignFromLongitude(sun.longitude), house: getHouseForPlanet(sun.longitude, houseCuspsArray), longitude: sun.longitude },
+    moon: { sign: getSignFromLongitude(moon.longitude), house: getHouseForPlanet(moon.longitude, houseCuspsArray), longitude: moon.longitude },
+    mercury: { sign: getSignFromLongitude(mercury.longitude), house: getHouseForPlanet(mercury.longitude, houseCuspsArray), longitude: mercury.longitude },
+    venus: { sign: getSignFromLongitude(venus.longitude), house: getHouseForPlanet(venus.longitude, houseCuspsArray), longitude: venus.longitude },
+    mars: { sign: getSignFromLongitude(mars.longitude), house: getHouseForPlanet(mars.longitude, houseCuspsArray), longitude: mars.longitude },
+    jupiter: { sign: getSignFromLongitude(jupiter.longitude), house: getHouseForPlanet(jupiter.longitude, houseCuspsArray), longitude: jupiter.longitude },
+    saturn: { sign: getSignFromLongitude(saturn.longitude), house: getHouseForPlanet(saturn.longitude, houseCuspsArray), longitude: saturn.longitude },
+    ascendant: { sign: getSignFromLongitude(ascendantLon), longitude: ascendantLon },
+    houseCusps: { 1: houseCuspsArray[0], 2: houseCuspsArray[1], 3: houseCuspsArray[2], 4: houseCuspsArray[3], 5: houseCuspsArray[4], 6: houseCuspsArray[5], 7: houseCuspsArray[6], 8: houseCuspsArray[7], 9: houseCuspsArray[8], 10: houseCuspsArray[9], 11: houseCuspsArray[10], 12: houseCuspsArray[11] },
+    chineseZodiac: getChineseZodiacSign(utcDate),
+  };
+}
+
+// --- FUNÇÃO ADICIONAL PARA SINASTIRA ---
+
+/**
+ * Calcula apenas o Signo Solar para uma data de nascimento.
+ * É uma versão simplificada para uso em sinastria.
+ */
+export function computeSunSign(birthDate: string): { sun: SunSignName } {
+  const [year, month, day] = birthDate.split('-').map(Number);
+  const utcDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+
+  const julianDayUT = swisseph.swe_utc_to_jd(
+    utcDate.getUTCFullYear(),
+    utcDate.getUTCMonth() + 1,
+    utcDate.getUTCDate(),
+    12, 0, 0,
+    swisseph.SE_GREG_CAL
+  ).julianDayUT;
+
+  const flag = swisseph.SEFLG_SPEED;
+  const sun = swisseph.swe_calc_ut(julianDayUT, swisseph.SE_SUN, flag);
+  
+  return {
+    sun: getSignFromLongitude(sun.longitude),
+  };
 }
