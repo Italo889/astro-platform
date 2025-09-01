@@ -5,8 +5,9 @@ import staticFiles from "@fastify/static";
 import dotenv from "dotenv";
 import path from "path";
 
-// Configurar dotenv
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config();
+}
 
 import { prisma } from "./prisma";
 import authPlugin from "./plugins/authPlugin";
