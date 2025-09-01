@@ -12,18 +12,18 @@ if (process.env.NODE_ENV !== 'production') {
 import { prisma } from "./prisma";
 import authPlugin from "./plugins/authPlugin";
 import { userRoutes } from "./routes/userRoutes";
-import { reportRoutes } from "./routes/reportRoutes"; 
+import { reportRoutes } from "./routes/reportRoutes";
 import { calculationRoutes } from "./routes/calculationRoutes";
 import { synastryRoutes } from "./routes/synastryRoutes";
-import { newsletterRoutes } from './routes/newsletterRoutes'; 
+import { newsletterRoutes } from './routes/newsletterRoutes';
 
 const server = Fastify({ logger: true });
 
 // --- Plugins (Middleware) ---
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [
-      "https://arcano-1f10c3cc540d.herokuapp.com", // frontend
-      "https://arcano-1a7a1b6d1bec.herokuapp.com"  // backend separado
+      "https://arcano-1f10c3cc540d.herokuapp.com",
+      "https://arcano-1a7a1b6d1bec.herokuapp.com"
     ]
   : [
       'http://localhost:5173',
@@ -53,8 +53,8 @@ server.register(helmet, {
       defaultSrc: ["'self'"],
       connectSrc: [
         "'self'",
-        "https://arcano-1f10c3cc540d.herokuapp.com", // frontend
-        "https://arcano-1a7a1b6d1bec.herokuapp.com"  // backend separado
+        "https://arcano-1f10c3cc540d.herokuapp.com",
+        "https://arcano-1a7a1b6d1bec.herokuapp.com"
       ],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
@@ -70,13 +70,14 @@ server.register(helmet, {
 
 server.register(authPlugin);
 
-// Servir arquivos estáticos do frontend (opcional)
+// --- Servir Arquivos Estáticos do Frontend ---
+// <-- CORREÇÃO 1: O caminho para a pasta 'dist' do frontend foi corrigido.
 server.register(staticFiles, {
-  root: path.join(__dirname, '../dist'),
-  prefix: '/', 
+  root: path.join(__dirname, '../../dist'),
+  prefix: '/',
 });
 
-// --- Rotas ---
+// --- Rotas da API ---
 server.get("/api", async () => {
   return { message: "Arcano API está no ar 🔮" };
 });
@@ -86,6 +87,22 @@ server.register(reportRoutes, { prefix: '/api/reports' });
 server.register(calculationRoutes, { prefix: '/api/calculate' });
 server.register(synastryRoutes, { prefix: '/api/calculate/synastry' });
 server.register(newsletterRoutes, { prefix: '/api/newsletter' });
+
+// <-- CORREÇÃO 2: Rota de Fallback para a Single Page Application (SPA).
+// Isso garante que o React Router funcione corretamente no Heroku.
+// Deve ser o último manipulador de rota a ser registrado.
+server.setNotFoundHandler((request, reply) => {
+  // Se a rota não encontrada começar com /api, retorne um erro 404 de API.
+  if (request.raw.url && request.raw.url.startsWith('/api')) {
+    return reply.status(404).send({
+      success: false,
+      message: `Rota ${request.method}:${request.url} não encontrada.`
+    });
+  }
+  // Para qualquer outra rota não encontrada, sirva o index.html do frontend.
+  reply.sendFile('index.html', path.join(__dirname, '../../dist'));
+});
+
 
 // --- Inicialização do Servidor ---
 const start = async () => {
