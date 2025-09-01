@@ -17,21 +17,17 @@ import { calculationRoutes } from "./routes/calculationRoutes";
 import { synastryRoutes } from "./routes/synastryRoutes";
 import { newsletterRoutes } from './routes/newsletterRoutes'; 
 
-
-dotenv.config();
-
 const server = Fastify({ logger: true });
 
 // --- Plugins (Middleware) ---
-const allowedOrigins = process.env.NODE_ENV === 'production' 
+// Lista de domínios permitidos para CORS
+const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [
-      'https://arcano-1f10c3cc540d.herokuapp.com', // frontend
-      'https://arcano-1a7a1b6d1bec.herokuapp.com', // Seu frontend em produção
-      'https://*.herokuapp.com' // Outros subdomínios Heroku se necessário
+      'https://arcano-1f10c3cc540d.herokuapp.com', // frontend real
     ]
   : [
       'http://localhost:5173',
-      'http://localhost:4321', 
+      'http://localhost:4321',
       'http://localhost:3000',
       'http://127.0.0.1:5173',
       'http://127.0.0.1:4321',
@@ -39,25 +35,23 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
     ];
 
 server.register(cors, {
-  origin: [
-    "http://localhost:5173",                     // Vite dev server
-    "http://localhost:3000",                     // fallback localhost
-    "http://localhost:3333",                     // nosso backend dev
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:3000", 
-    "http://127.0.0.1:3333",
-    "https://arcano-1f10c3cc540d.herokuapp.com", // frontend atual em Heroku
-    "https://arcano-1a7a1b6d1bec.herokuapp.com", // URL problemática (temporário)
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`CORS not allowed: ${origin}`), false);
+    }
+  },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With']
 });
+
 server.register(helmet, {
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: ["'self'", "https://*.herokuapp.com"],
+      connectSrc: ["'self'", "https://arcano-1f10c3cc540d.herokuapp.com"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -69,16 +63,16 @@ server.register(helmet, {
     },
   },
 });
+
 server.register(authPlugin);
 
-// Servir arquivos estáticos do frontend
+// Servir arquivos estáticos do frontend (opcional, se houver frontend buildado)
 server.register(staticFiles, {
   root: path.join(__dirname, '../dist'),
   prefix: '/', 
 });
 
 // --- Rotas ---
-// Rota de health check da API
 server.get("/api", async () => {
   return { message: "Arcano API está no ar 🔮" };
 });
@@ -88,8 +82,6 @@ server.register(reportRoutes, { prefix: '/api/reports' });
 server.register(calculationRoutes, { prefix: '/api/calculate' });
 server.register(synastryRoutes, { prefix: '/api/calculate/synastry' });
 server.register(newsletterRoutes, { prefix: '/api/newsletter' });
-
-
 
 // --- Inicialização do Servidor ---
 const start = async () => {
