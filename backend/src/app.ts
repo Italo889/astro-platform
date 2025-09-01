@@ -29,36 +29,21 @@ server.register(authPlugin);
 
 // Servir arquivos estáticos do frontend
 server.register(staticFiles, {
-  root: path.join(__dirname, '../'),
-  prefix: '/', // opcional: default '/'
+  root: path.join(__dirname, '../dist'),
+  prefix: '/', 
 });
 
 // --- Rotas ---
-server.get("/", async () => {
+// Rota de health check da API
+server.get("/api", async () => {
   return { message: "Arcano API está no ar 🔮" };
 });
 
-server.register(userRoutes, { prefix: '/users' });
-server.register(reportRoutes, { prefix: '/reports' });
-server.register(calculationRoutes, { prefix: '/calculate' });
-server.register(synastryRoutes, { prefix: '/calculate/synastry' });
-server.register(newsletterRoutes, { prefix: '/newsletter' });
-
-// Rota catch-all para SPA - serve index.html para todas as rotas não-API
-server.get('/*', async (request, reply) => {
-  // Se a rota começar com /api, /users, /reports, /calculate, /newsletter, não servir o index.html
-  if (request.url.startsWith('/api') || 
-      request.url.startsWith('/users') || 
-      request.url.startsWith('/reports') || 
-      request.url.startsWith('/calculate') || 
-      request.url.startsWith('/newsletter')) {
-    reply.code(404).send({ error: 'Route not found' });
-    return;
-  }
-  
-  // Servir index.html para rotas do frontend
-  reply.sendFile('index.html');
-});
+server.register(userRoutes, { prefix: '/api/users' });
+server.register(reportRoutes, { prefix: '/api/reports' });
+server.register(calculationRoutes, { prefix: '/api/calculate' });
+server.register(synastryRoutes, { prefix: '/api/calculate/synastry' });
+server.register(newsletterRoutes, { prefix: '/api/newsletter' });
 
 
 
