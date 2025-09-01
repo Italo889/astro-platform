@@ -1,6 +1,14 @@
 node_modules
 # Keep environment variables out of version control
+.# Nunca envie suas chaves de API ou segredos!
 .env
-.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+backend/.env
+backend/.env.local
+backend/.env.production
 
 /src/generated/prisma
