@@ -10,7 +10,10 @@
     "migrate": "prisma migrate dev",
     "generate": "prisma generate",
     "lint": "eslint . --ext .ts",
-    "test": "jest"
+    "test": "jest",
+    "env:dev": "node setup-env.js development",
+    "env:prod": "node setup-env.js production",
+    "setup": "npm run env:dev && npm run generate"
   },
   "dependencies": {
     "@fastify/cors": "^11.1.0",
