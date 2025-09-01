@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
+    "build:safe": "tsc --noEmitOnError false",
     "postbuild": "prisma generate",
     "start": "node dist/app.js",
     "migrate": "prisma migrate dev",
