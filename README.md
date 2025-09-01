@@ -5,8 +5,8 @@
 ![Arcano Platform Banner](https://img.shields.io/badge/Arcano-Platform-8b63e9?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDIxQzE2Ljk3MDYgMjEgMjEgMTYuOTcwNiAyMSAxMkMyMSA3LjAyOTQ0IDE2Ljk3MDYgMyAxMiAzQzcuMDI5NDQgMyAzIDcuMDI5NDQgMyAxMkMzIDE2Ljk3MDYgNy4wMjk0NCAyMSAxMiAyMVoiIHN0cm9rZT0iI0ZGRDcwMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHA%2BPC9zdmc%2B&logoColor=FFD700)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19+-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
-[![Fastify](https://img.shields.io/badge/Fastify-5.4+-000000?style=for-the-badge&logo=fastify&logoColor=white)](https://fastify.dev/)
-[![Prisma](https://img.shields.io/badge/Prisma-6.13+-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![Fastify](https://img.shields.io/badge/Fastify-5.0+-000000?style=for-the-badge&logo=fastify&logoColor=white)](https://fastify.dev/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.0+-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
 
 **Desvende os mistérios do universo interior através da astrologia, tarô e numerologia**
 
@@ -81,7 +81,12 @@ Fugindo dos estereótipos comuns de aplicações esotéricas, o Arcano apresenta
 - 🗂️ **Zustand** - State Management
 - 🚦 **React Router DOM** - Routing
 - 🔄 **TanStack Query** - Data Fetching
+- 🌐 **Axios** - HTTP Client
 - 📱 **Radix UI** - Component Primitives
+- 🎯 **React Hook Form** - Form Management
+- 🍪 **React Cookie Consent** - LGPD Compliance
+- 🎨 **Lucide React** - Icon System
+- 📅 **Date-fns** - Date Utilities
 
 </td>
 <td>
@@ -95,6 +100,8 @@ Fugindo dos estereótipos comuns de aplicações esotéricas, o Arcano apresenta
 - 🛡️ **Helmet + CORS** - Security
 - 📧 **Newsletter System** - Email Management
 - 🔍 **TypeScript** - Type Safety
+- 🌐 **IORedis** - Redis Client
+- 📦 **Dotenv** - Environment Configuration
 
 </td>
 </tr>
@@ -103,35 +110,39 @@ Fugindo dos estereótipos comuns de aplicações esotéricas, o Arcano apresenta
 ## � **Arquitetura do Projeto**
 
 ```
-arcano-platform/
-├── 📁 frontend/
-│   ├── 📁 src/
-│   │   ├── 📁 components/
-│   │   │   ├── 📁 auth/           # AuthModal, FeatureGate, ProtectedRoute
-│   │   │   ├── 📁 features/       # dashboard, report (componentes específicos)
-│   │   │   ├── 📁 layout/         # Header, Footer, RootLayout, BackgroundEffects
-│   │   │   ├── 📁 sections/       # Hero, CalculatorForm, DailyInsight
-│   │   │   └── 📁 ui/            # Button, Modal, LogoSymbol (componentes reutilizáveis)
-│   │   ├── 📁 domain/            # types.ts (tipos de negócio)
-│   │   ├── 📁 hooks/             # useCalculatorForm, useSynastryForm
-│   │   ├── 📁 pages/             # Landing, Dashboard, Report, Synastry
-│   │   ├── 📁 services/          # API clients (auth, reports, newsletter)
-│   │   ├── 📁 store/             # Zustand stores (auth, reports, UI)
-│   │   └── 📁 utils/             # helpers, constants, formatters
-│   └── 📄 package.json
+astro-platform/
+├── 📁 src/                    # Frontend React
+│   ├── 📁 components/
+│   │   ├── 📁 auth/           # AuthModal, FeatureGate, ProtectedRoute
+│   │   ├── 📁 features/       # dashboard, report (componentes específicos)
+│   │   ├── 📁 layout/         # Header, Footer, RootLayout, BackgroundEffects
+│   │   ├── 📁 sections/       # Hero, CalculatorForm, DailyInsight, Results
+│   │   └── 📁 ui/            # Button, Modal, LogoSymbol (componentes reutilizáveis)
+│   ├── 📁 domain/            # types.ts (tipos de negócio)
+│   ├── 📁 hooks/             # useCalculatorForm, useSynastryForm
+│   ├── 📁 pages/             # Landing, Dashboard, Report, Synastry, Privacy
+│   ├── 📁 services/          # API clients (auth, reports, newsletter, synastry)
+│   ├── 📁 store/             # Zustand stores (auth, reports, synastry, UI)
+│   ├── 📁 styles/            # global.css, animations.css
+│   └── 📁 utils/             # helpers, constants, formatters, image-map
 ├── 📁 backend/
 │   ├── 📁 prisma/
-│   │   ├── 📄 schema.prisma      # Database schema
-│   │   └── 📁 migrations/        # Database migrations
+│   │   ├── 📄 schema.prisma  # Database schema (Users, Reports, Cities, Subscribers)
+│   │   └── 📁 migrations/    # Database migrations
 │   └── 📁 src/
+│       ├── 📁 @types/        # swisseph.d.ts (definições TypeScript)
+│       ├── 📁 data/          # major_arcana.json (dados dos arcanos)
 │       ├── 📁 domain/
-│       │   ├── 📄 engine.ts      # Orquestrador principal de cálculos
-│       │   ├── 📄 types.ts       # Tipos de negócio
-│       │   └── 📁 lib/           # Lógicas específicas (astro, numerology, synastry)
-│       ├── 📁 plugins/           # authPlugin.ts (middleware de autenticação)
-│       ├── 📁 routes/            # Rotas da API organizadas por feature
-│       ├── 📁 scripts/           # Scripts de importação e utilitários
-│       └── 📄 app.ts            # Servidor Fastify principal
+│       │   ├── 📄 engine.ts  # Orquestrador principal de cálculos
+│       │   ├── 📄 types.ts   # Tipos de negócio
+│       │   └── 📁 lib/       # astro.ts, numerology.ts, synastry.ts, arcana.ts
+│       ├── 📁 plugins/       # authPlugin.ts (middleware de autenticação)
+│       ├── 📁 routes/        # calculationRoutes, userRoutes, reportRoutes, etc.
+│       ├── 📁 scripts/       # import-cities.ts (utilitários)
+│       ├── 📁 queues/        # queue.ts (BullMQ para processamento)
+│       └── 📄 app.ts        # Servidor Fastify principal
+├── 📁 public/
+│   └── 📁 images/           # arcana/, banners/, signs/ (assets estáticos)
 └── 📄 README.md
 ```
 
@@ -172,8 +183,8 @@ npm run dev
 
 ### **3. Setup do Frontend**
 ```bash
-# Em novo terminal
-cd frontend
+# Em novo terminal, volte para a raiz do projeto
+cd ..
 
 # Instalar dependências  
 npm install
@@ -183,23 +194,6 @@ npm run dev
 ```
 🔗 **Frontend rodando em**: `http://localhost:5173`
 
-## 🌐 **API Endpoints**
-
-<details>
-<summary><strong>📋 Ver todos os endpoints</strong></summary>
-
-| Método | Endpoint | Auth | Descrição |
-|--------|----------|------|-----------|
-| `POST` | `/users/register` | ❌ | Registrar novo usuário |
-| `POST` | `/users/login` | ❌ | Login do usuário |
-| `POST` | `/calculate/personal` | ❌ | Calcular relatório pessoal (anônimo) |
-| `POST` | `/calculate/synastry` | ❌ | Calcular sinastria (anônima) |
-| `POST` | `/reports` | ✅ | Salvar relatório no perfil |
-| `GET` | `/reports` | ✅ | Listar relatórios do usuário |
-| `GET` | `/reports/:id` | ✅ | Buscar relatório específico |
-| `POST` | `/newsletter/subscribe` | ❌ | Inscrever na newsletter |
-
-</details>
 
 ## 🧮 **Motor de Cálculos**
 
@@ -270,41 +264,16 @@ npm run test              # Testes da API
 npm run test:e2e         # Testes end-to-end
 ```
 
-## 🚢 **Deploy**
-
-### **Frontend (Vercel/Netlify)**
-```bash
-npm run build
-npm run preview
-```
-
-### **Backend (Railway/Render)**
-```bash
-npm run build
-npm run start
-```
-
-### **Database (Supabase/PlanetScale)**
-```bash
-npx prisma migrate deploy
-npx prisma generate
-```
-
 ## 🔮 **Roadmap Futuro**
 
-### **Q1 2025**
 - [ ] 📱 **PWA Completo** - App instalável
 - [ ] 📊 **Dashboard Analytics** - Métricas de uso
 - [ ] 🎨 **Temas Customizáveis** - Dark/Light modes
 - [ ] 🌍 **Internacionalização** (PT/EN/ES)
-
-### **Q2 2025**
 - [ ] 📝 **Blog Integrado** - Headless CMS
 - [ ] 👤 **Perfil Avançado** - Upload de foto, edição
 - [ ] 💎 **Features Premium** - Relatórios PDF
 - [ ] 🔄 **Sinastria Persistente** - Salvar no perfil
-
-### **Q3 2025**
 - [ ] 🤖 **AI Assistant** - Interpretações personalizadas
 - [ ] 📅 **Calendário Cósmico** - Eventos astronômicos
 - [ ] 🎯 **Recomendações** - Conteúdo personalizado
@@ -316,10 +285,17 @@ Contribuições são sempre bem-vindas! Veja nosso [Guia de Contribuição](CONT
 
 ### **Como Contribuir**
 1. 🍴 Fork o projeto
-2. 🌿 Crie uma branch (`git checkout -b feature/AmazingFeature`)
-3. 📝 Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. 📤 Push para a branch (`git push origin feature/AmazingFeature`)
+2. 🔮 Crie uma branch com tema místico (`git checkout -b arcano/a-imperatriz` ou `git checkout -b signo/aquario-feature`)
+3. 📝 Commit suas mudanças (`git commit -m 'feat(arcano): add A Imperatriz interpretation'`)
+4. 📤 Push para a branch (`git push origin arcano/a-imperatriz`)
 5. 🔄 Abra um Pull Request
+
+### **Convenção de Branches**
+- 🔮 `arcano/nome-do-arcano` - Para funcionalidades relacionadas ao Tarô
+- ♈ `signo/nome-do-signo` - Para funcionalidades astrológicas  
+- 🔢 `numerologia/feature` - Para funcionalidades numerológicas
+- 🐛 `bugfix/descricao-do-bug` - Para correções de bugs
+- 📚 `docs/melhoria` - Para melhorias na documentação
 
 ### **Tipos de Contribuição**
 - 🐛 **Bug Reports** - Relate problemas encontrados
@@ -334,17 +310,16 @@ Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) par
 
 ## 👨‍💻 **Autor**
 
-**Italo Santos**
+**Italo Evangelista**
 - 🌐 GitHub: [@Italo889](https://github.com/Italo889)
-- 📧 Email: [contato@arcano.com](mailto:contato@arcano.com)
-- 💼 LinkedIn: [/in/italo-santos](https://linkedin.com/in/italo-santos)
+- 📧 Email: [italo889@gmail.com](mailto:italo889@gmail.com)
+- 💼 LinkedIn: [/in/italo-evangelista](https://linkedin.com/in/italo-evangelista)
 
 ## 🙏 **Agradecimentos**
 
 - 🌟 **Swiss Ephemeris** pela precisão astronômica
 - 🎨 **Lucide Icons** pelos ícones premium
 - 🎭 **Framer Motion** pelas animações fluidas
-- 🎯 **Vercel** pela hospedagem
 - 🌙 Toda a comunidade **Open Source**
 
 ---
