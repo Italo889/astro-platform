@@ -10,7 +10,7 @@
     "build:frontend": "tsc --noEmitOnError false && vite build",
     "copy:frontend": "cp -r dist/* backend/dist/ 2>/dev/null || true",
     "start": "node backend/dist/app.js",
-    "heroku-postbuild": "npm install && vite build && cd backend && npm install && npm run build",
+    "heroku-postbuild": "npm run build:frontend && npm run build:backend",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
