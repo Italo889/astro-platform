@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "build:safe": "tsc --noEmitOnError false",
     "postbuild": "prisma generate",
     "heroku-postbuild": "prisma generate && npm run build:safe",
