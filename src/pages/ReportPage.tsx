@@ -12,7 +12,7 @@ import { ReportHeader } from '../components/features/report/ReportHeader';
 import { AstrologySection } from '../components/features/report/AstrologySection';
 import { NumerologySection } from '../components/features/report/NumerologySection';
 import { ArcanaSection } from '../components/features/report/ArcanaSection';
-import type { PersonalReport, SavedReport } from '../domain/types';
+import type { PersonalReport } from '../domain/types';
 
 const ReportPage: FC = () => {
   const { reportId } = useParams<{ reportId: string }>();

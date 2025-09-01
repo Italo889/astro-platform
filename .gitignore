@@ -19,6 +19,9 @@ pnpm-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env
+backend/.env.local
+backend/.env.production
 
 # Arquivos de Sistema Operacional
 .DS_Store

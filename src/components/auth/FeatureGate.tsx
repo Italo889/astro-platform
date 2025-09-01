@@ -1,11 +1,10 @@
 // src/components/auth/FeatureGate.tsx
 
 import type { FC } from 'react';
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { useUIStore } from '../../store/uiStore';
-import { Lock, Sparkles, Star, Eye } from 'lucide-react';
+import { Lock, Sparkles} from 'lucide-react';
 
 interface FeatureGateProps {
   title: string;

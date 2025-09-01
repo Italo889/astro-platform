@@ -1,7 +1,6 @@
 import { motion, easeOut } from 'framer-motion';
 import { Button } from '../ui/Button';
-import { ResultCard } from '../cards/ResultCard';
-import { ArrowRight, LoaderCircle, Sparkles, Eye, Clock } from 'lucide-react';
+import { ArrowRight, LoaderCircle, Sparkles, Eye } from 'lucide-react';
 import { useCalculatorForm } from '../../hooks/useCalculatorForm';
 import { formFields } from '../../utils/constants';
 
@@ -130,7 +129,7 @@ export const CalculatorForm = () => {
         className="px-8 pb-8 relative z-10"
       >
         <div className="max-w-[520px] mx-auto w-full space-y-6">
-          {formFields.map((field, index) => (
+          {formFields.map((field) => (
             <motion.div 
               key={field.id} 
               variants={childVariants} 
