@@ -4,94 +4,47 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fastify_1 = __importDefault(require("fastify"));
-const cors_1 = __importDefault(require("@fastify/cors"));
-const helmet_1 = __importDefault(require("@fastify/helmet"));
 const static_1 = __importDefault(require("@fastify/static"));
-const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
-if (process.env.NODE_ENV !== 'production') {
-    dotenv_1.default.config();
+// Função principal para isolar o escopo assíncrono
+async function buildServer() {
+    const server = (0, fastify_1.default)({ logger: true });
+    // --- PASSO 1: Registrar o plugin de arquivos estáticos ---
+    // Usamos 'await' para garantir que ele carregue completamente antes de prosseguir.
+    await server.register(static_1.default, {
+        root: path_1.default.join(__dirname, '../../dist'),
+        prefix: '/',
+    });
+    server.log.info(`Servindo arquivos estáticos de: ${path_1.default.join(__dirname, '../../dist')}`);
+    // --- PASSO 2: Rota de API de teste ---
+    server.get('/api/health', async (request, reply) => {
+        return { status: 'ok' };
+    });
+    // --- PASSO 3: Rota de Fallback para a Single Page Application (SPA) ---
+    server.setNotFoundHandler((request, reply) => {
+        server.log.info(`Rota não encontrada: ${request.url}. Servindo index.html.`);
+        // A função 'reply.sendFile' agora vai existir porque esperamos o plugin carregar.
+        reply.sendFile('index.html');
+    });
+    return server;
 }
-const prisma_1 = require("./prisma");
-const authPlugin_1 = __importDefault(require("./plugins/authPlugin"));
-const userRoutes_1 = require("./routes/userRoutes");
-const reportRoutes_1 = require("./routes/reportRoutes");
-const calculationRoutes_1 = require("./routes/calculationRoutes");
-const synastryRoutes_1 = require("./routes/synastryRoutes");
-const newsletterRoutes_1 = require("./routes/newsletterRoutes");
-const server = (0, fastify_1.default)({ logger: true });
-// --- Plugins (Middleware) ---
-const allowedOrigins = process.env.NODE_ENV === 'production'
-    ? [
-        "https://arcano-1f10c3cc540d.herokuapp.com", // frontend
-        "https://arcano-1a7a1b6d1bec.herokuapp.com" // backend separado
-    ]
-    : [
-        'http://localhost:5173',
-        'http://localhost:4321',
-        'http://localhost:3000',
-        'http://127.0.0.1:5173',
-        'http://127.0.0.1:4321',
-        'http://127.0.0.1:3000'
-    ];
-server.register(cors_1.default, {
-    origin: (origin, cb) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            cb(null, true);
-        }
-        else {
-            cb(new Error(`CORS not allowed: ${origin}`), false);
-        }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With']
-});
-server.register(helmet_1.default, {
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            connectSrc: [
-                "'self'",
-                "https://arcano-1f10c3cc540d.herokuapp.com", // frontend
-                "https://arcano-1a7a1b6d1bec.herokuapp.com" // backend separado
-            ],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https:"],
-            objectSrc: ["'none'"],
-            frameAncestors: ["'none'"],
-            baseUri: ["'self'"],
-            frameSrc: ["'self'"],
-        },
-    },
-});
-server.register(authPlugin_1.default);
-// Servir arquivos estáticos do frontend (opcional)
-server.register(static_1.default, {
-    root: path_1.default.join(__dirname, '../dist'),
-    prefix: '/',
-});
-// --- Rotas ---
-server.get("/api", async () => {
-    return { message: "Arcano API está no ar 🔮" };
-});
-server.register(userRoutes_1.userRoutes, { prefix: '/api/users' });
-server.register(reportRoutes_1.reportRoutes, { prefix: '/api/reports' });
-server.register(calculationRoutes_1.calculationRoutes, { prefix: '/api/calculate' });
-server.register(synastryRoutes_1.synastryRoutes, { prefix: '/api/calculate/synastry' });
-server.register(newsletterRoutes_1.newsletterRoutes, { prefix: '/api/newsletter' });
-// --- Inicialização do Servidor ---
-const start = async () => {
+// --- PASSO 4: Função de inicialização explícita ---
+async function start() {
+    let server;
     try {
+        server = await buildServer();
         const port = Number(process.env.PORT) || 3333;
-        await server.listen({ port, host: "0.0.0.0" });
+        const host = '0.0.0.0'; // Hardcoded para garantir
+        await server.listen({ port, host });
+        server.log.info(`Servidor rodando na porta ${port}`);
     }
     catch (err) {
-        server.log.error(err);
-        await prisma_1.prisma.$disconnect();
+        console.error('Erro fatal ao iniciar o servidor:', err);
+        if (server) {
+            server.log.error(err);
+        }
         process.exit(1);
     }
-};
+}
+// Inicia a aplicação
 start();

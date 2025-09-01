@@ -5,12 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:backend && npm run build:frontend && npm run copy:frontend",
+    "build": "npm run build:frontend && npm run build:backend && npm run copy:frontend",
     "build:backend": "cd backend && npm install --include=dev && npm run build:safe",
-    "build:frontend": "tsc --noEmitOnError false && vite build",
-    "copy:frontend": "cp -r dist/* backend/dist/ 2>/dev/null || true",
+    "build:frontend": "rm -rf dist && tsc --noEmitOnError false && vite build",
+    "copy:frontend": "rm -rf backend/dist/* && cp -r dist/* backend/dist/",
     "start": "node backend/dist/app.js",
-    "heroku-postbuild": "npm run build:frontend && npm run build:backend",
+    "heroku-postbuild": "npm run build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
