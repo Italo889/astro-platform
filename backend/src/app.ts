@@ -1,4 +1,3 @@
-// src/app.ts
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
@@ -20,12 +19,10 @@ import { newsletterRoutes } from './routes/newsletterRoutes';
 const server = Fastify({ logger: true });
 
 // --- Plugins (Middleware) ---
-// Lista de domínios permitidos para CORS
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [
-      "'self'",
-        "https://arcano-1f10c3cc540d.herokuapp.com", // frontend
-        "https://arcano-1a7a1b6d1bec.herokuapp.com" // frontend real
+      "https://arcano-1f10c3cc540d.herokuapp.com", // frontend
+      "https://arcano-1a7a1b6d1bec.herokuapp.com"  // backend separado
     ]
   : [
       'http://localhost:5173',
@@ -53,7 +50,11 @@ server.register(helmet, {
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: ["'self'", "https://arcano-1f10c3cc540d.herokuapp.com"],
+      connectSrc: [
+        "'self'",
+        "https://arcano-1f10c3cc540d.herokuapp.com", // frontend
+        "https://arcano-1a7a1b6d1bec.herokuapp.com"  // backend separado
+      ],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -68,7 +69,7 @@ server.register(helmet, {
 
 server.register(authPlugin);
 
-// Servir arquivos estáticos do frontend (opcional, se houver frontend buildado)
+// Servir arquivos estáticos do frontend (opcional)
 server.register(staticFiles, {
   root: path.join(__dirname, '../dist'),
   prefix: '/', 

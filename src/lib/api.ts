@@ -1,33 +1,30 @@
-// src/lib/api.ts
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-// SOLUÇÃO DEFINITIVA: Frontend separado do backend
 const getApiBaseUrl = () => {
-  // Desenvolvimento local
+  // localhost
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     console.log('🔧 DESENVOLVIMENTO: Usando localhost API');
     return 'http://localhost:3333';
   }
 
-  // Produção → backend real (microserviço)
+  // produção: backend separado
   const apiUrl = 'https://arcano-1a7a1b6d1bec.herokuapp.com';
   console.log('🚀 PRODUÇÃO: Usando backend separado:', apiUrl);
   return apiUrl;
 };
 
 export const api = axios.create({
-  baseURL: getApiBaseUrl(), // o /api já está no backend
+  baseURL: getApiBaseUrl() + '/api',
   timeout: 10000,
 });
 
-// INTERCEPTOR: Antes de cada requisição
+// INTERCEPTOR: antes da requisição
 api.interceptors.request.use(
   (config) => {
     console.log('📡 Fazendo requisição para:', (config.baseURL ?? '') + config.url);
-    
-    const token = useAuthStore.getState().token;
 
+    const token = useAuthStore.getState().token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -37,7 +34,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// INTERCEPTOR DE RESPOSTA: para lidar com erros globais
+// INTERCEPTOR DE RESPOSTA: erros e CORS
 api.interceptors.response.use(
   (response) => response,
   (error) => {
