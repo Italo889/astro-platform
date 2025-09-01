@@ -23,7 +23,9 @@ const server = Fastify({ logger: true });
 // Lista de domínios permitidos para CORS
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [
-      'https://arcano-1f10c3cc540d.herokuapp.com', // frontend real
+      "'self'",
+        "https://arcano-1f10c3cc540d.herokuapp.com", // frontend
+        "https://arcano-1a7a1b6d1bec.herokuapp.com" // frontend real
     ]
   : [
       'http://localhost:5173',
