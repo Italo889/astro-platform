@@ -11,7 +11,7 @@
     "build": "tsc",
     "build:safe": "tsc --noEmitOnError false",
     "postbuild": "prisma generate",
-    "heroku-postbuild": "prisma generate && npm run build:safe",
+    "heroku-postbuild": "npm install --include=dev && prisma generate && npm run build:safe",
     "start": "node dist/app.js",
     "migrate": "prisma migrate dev",
     "generate": "prisma generate",
