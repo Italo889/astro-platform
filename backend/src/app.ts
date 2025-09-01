@@ -4,6 +4,9 @@ import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import dotenv from "dotenv";
 
+// Configurar dotenv
+dotenv.config();
+
 import { prisma } from "./prisma";
 import authPlugin from "./plugins/authPlugin";
 import { userRoutes } from "./routes/userRoutes";

@@ -12,7 +12,7 @@ const environment = process.argv[2] || 'development';
 
 const configs = {
   development: {
-    DATABASE_URL: 'postgresql://postgres:senha@localhost:5432/astro_platform?schema=public',
+    DATABASE_URL: 'postgresql://postgres:1234@localhost:5432/astrodb',
     REDIS_URL: 'redis://localhost:6379',
     PORT: '3333',
     JWT_SECRET: 'iTyf7M-mQbpQvohjBTpKbLk0IRK2lgNc9xTSJvEQ-Fi4UTOcCU_tVTaXvYJNbgnBeBfZjMSSRO5PyDRkvk50wA'
