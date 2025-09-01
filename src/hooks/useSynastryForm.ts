@@ -50,9 +50,6 @@ export const useSynastryForm = () => {
           birthTime: values.horaDeNascimento || '00:00',
           birthPlace: values.cidadeNascimento
         };
-          birthTime: values.horaDeNascimento || '00:00',
-          birthPlace: values.localDeNascimento || '',
-        };
       };
 
       const input1 = formatInput(person1Values);
