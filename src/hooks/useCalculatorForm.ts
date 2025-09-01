@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useReportStore } from '../store/reportStore';
 import { useAuthStore } from '../store/authStore';
 import { formFields } from '../utils/constants';
-import { formatDate } from '../utils/formatters';
+import { formatDate, formatTime } from '../utils/formatters';
 import { createAndSaveReport, calculateAnonymousReport } from '../services/reportService';
 import type { CalculationInput } from '../services/reportService';
 import type { PersonalReport, SavedReport, BirthInput } from '../domain/types';
@@ -33,6 +33,8 @@ export const useCalculatorForm = (): UseCalculatorFormReturn => {
 
     if (id === 'dataNascimento') {
       formattedValue = formatDate(value);
+    } else if (id === 'horaNascimento') {
+      formattedValue = formatTime(value);
     }
     
     setInputValues(prev => ({ ...prev, [id]: formattedValue }));
@@ -55,6 +57,10 @@ export const useCalculatorForm = (): UseCalculatorFormReturn => {
 
     if (inputValues.dataNascimento && !/^\d{2}\/\d{2}\/\d{4}$/.test(inputValues.dataNascimento)) {
       newErrors.dataNascimento = "Formato de data inválido. Use DD/MM/AAAA.";
+    }
+
+    if (inputValues.horaNascimento && !/^\d{2}:\d{2}$/.test(inputValues.horaNascimento)) {
+      newErrors.horaNascimento = "Formato de hora inválido. Use HH:MM.";
     }
     
     if (Object.keys(newErrors).length > 0) {

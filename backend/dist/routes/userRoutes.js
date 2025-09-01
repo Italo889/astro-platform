@@ -8,6 +8,7 @@ exports.userRoutes = userRoutes;
 const prisma_1 = require("../prisma");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken")); // NOVO: Importando a biblioteca JWT
+const badgeSystem_1 = require("../domain/lib/badgeSystem"); // NOVO: Sistema de badges
 async function userRoutes(fastify) {
     // Rota: POST /users/register (sem alterações)
     fastify.post('/register', async (request, reply) => {
@@ -23,8 +24,15 @@ async function userRoutes(fastify) {
         const user = await prisma_1.prisma.user.create({
             data: { name, email, password: hashedPassword },
         });
+        // 🌟 NOVO: Verificar e conceder badge de Beta Tester
+        const betaBadge = await badgeSystem_1.BadgeSystem.checkAndAwardBetaTesterBadge(user.id);
         const { password: _, ...userWithoutPassword } = user;
-        return reply.status(201).send(userWithoutPassword);
+        // Se ganhou a badge de beta tester, incluir no retorno
+        const response = {
+            ...userWithoutPassword,
+            newBadge: betaBadge // null se não ganhou, objeto Badge se ganhou
+        };
+        return reply.status(201).send(response);
     });
     // NOVO: Rota de Login - POST /users/login
     fastify.post('/login', async (request, reply) => {
@@ -55,5 +63,28 @@ async function userRoutes(fastify) {
             message: 'Login bem-sucedido!',
             token,
         });
+    });
+    // 🏆 NOVO: Rota para buscar badges do usuário autenticado
+    fastify.get('/badges', {
+        preHandler: [fastify.authenticate]
+    }, async (request, reply) => {
+        try {
+            const userId = request.user.id;
+            const badges = await badgeSystem_1.BadgeSystem.getUserBadges(userId);
+            // Buscar informações do usuário incluindo status de beta tester
+            const user = await prisma_1.prisma.user.findUnique({
+                where: { id: userId }
+            });
+            return reply.send({
+                badges,
+                betaTester: user?.isBetaTester ? {
+                    number: user.betaTesterNumber,
+                    status: `Beta Tester #${user.betaTesterNumber}`
+                } : null
+            });
+        }
+        catch (error) {
+            return reply.status(500).send({ error: 'Erro ao buscar badges.' });
+        }
     });
 }
