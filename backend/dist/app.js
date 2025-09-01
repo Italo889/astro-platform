@@ -23,7 +23,17 @@ dotenv_1.default.config();
 const server = (0, fastify_1.default)({ logger: true });
 // --- Plugins (Middleware) ---
 server.register(cors_1.default);
-server.register(helmet_1.default);
+server.register(helmet_1.default, {
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            connectSrc: ["'self'", "https://*.herokuapp.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https:"],
+        },
+    },
+});
 server.register(authPlugin_1.default);
 // Servir arquivos estáticos do frontend
 server.register(static_1.default, {

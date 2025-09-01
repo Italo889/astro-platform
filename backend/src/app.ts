@@ -24,7 +24,17 @@ const server = Fastify({ logger: true });
 
 // --- Plugins (Middleware) ---
 server.register(cors);
-server.register(helmet);
+server.register(helmet, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "https://*.herokuapp.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+});
 server.register(authPlugin);
 
 // Servir arquivos estáticos do frontend
