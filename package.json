@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:backend && npm run build:frontend",
+    "build": "npm run build:backend && npm run build:frontend && npm run copy:frontend",
     "build:backend": "cd backend && npm install --include=dev && npm run build:safe",
     "build:frontend": "tsc --noEmitOnError false && vite build",
+    "copy:frontend": "cp -r dist/* backend/dist/ 2>/dev/null || true",
     "start": "cd backend && npm start",
     "heroku-postbuild": "npm run build",
     "lint": "eslint .",
