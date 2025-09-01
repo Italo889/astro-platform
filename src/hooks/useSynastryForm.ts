@@ -48,6 +48,9 @@ export const useSynastryForm = () => {
           name: values.nome,
           birthDate: `${year}-${month}-${day}`,
           birthTime: values.horaDeNascimento || '00:00',
+          birthPlace: values.cidadeNascimento
+        };
+          birthTime: values.horaDeNascimento || '00:00',
           birthPlace: values.localDeNascimento || '',
         };
       };

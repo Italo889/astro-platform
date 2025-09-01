@@ -1,6 +1,6 @@
 import swisseph from 'swisseph';
 import path from 'path';
-import type { SunSignName, ChineseZodiacSign, AstrologyResult, BirthDetails, PlanetInfo } from '../types';
+import type { SunSignName, ChineseZodiacSign, AstrologyResult, BirthDetails } from '../types';
 import { prisma } from '../../prisma';
 
 // --- Interfaces, Tipos e Constantes ---

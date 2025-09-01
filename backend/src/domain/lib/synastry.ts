@@ -1,6 +1,6 @@
 // src/domain/lib/synastry.ts
 
-import type { BirthInput, SynastryReport, SunSignName, CompatibilityAspect, MajorArcana } from '../types';
+import type { BirthInput, SynastryReport, SunSignName, CompatibilityAspect } from '../types';
 import { computeSunSign } from './astro';
 import { lifePathFromDate } from './numerology';
 import { getArcanaByNumber } from './arcana';
