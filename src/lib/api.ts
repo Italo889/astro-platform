@@ -13,8 +13,8 @@ const getApiBaseUrl = () => {
     return 'http://localhost:3333';
   }
   
-  // Em produção, usa a URL relativa (mesmo domínio)
-  return '';
+  // Em produção, usa a URL atual do domínio
+  return `${window.location.protocol}//${window.location.host}`;
 };
 
 export const api = axios.create({

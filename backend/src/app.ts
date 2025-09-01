@@ -23,15 +23,23 @@ dotenv.config();
 const server = Fastify({ logger: true });
 
 // --- Plugins (Middleware) ---
-server.register(cors);
+server.register(cors, {
+  origin: true, // Permitir todas as origens em produção
+  credentials: true,
+});
 server.register(helmet, {
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       connectSrc: ["'self'", "https://*.herokuapp.com"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      baseUri: ["'self'"],
+      frameSrc: ["'self'"],
     },
   },
 });

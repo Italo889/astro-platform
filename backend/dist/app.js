@@ -22,15 +22,23 @@ const newsletterRoutes_1 = require("./routes/newsletterRoutes");
 dotenv_1.default.config();
 const server = (0, fastify_1.default)({ logger: true });
 // --- Plugins (Middleware) ---
-server.register(cors_1.default);
+server.register(cors_1.default, {
+    origin: true, // Permitir todas as origens em produção
+    credentials: true,
+});
 server.register(helmet_1.default, {
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
             connectSrc: ["'self'", "https://*.herokuapp.com"],
             scriptSrc: ["'self'", "'unsafe-inline'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https:"],
+            objectSrc: ["'none'"],
+            frameAncestors: ["'none'"],
+            baseUri: ["'self'"],
+            frameSrc: ["'self'"],
         },
     },
 });
