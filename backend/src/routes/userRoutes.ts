@@ -4,6 +4,7 @@ import type { FastifyInstance } from 'fastify';
 import { prisma } from '../prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'; // NOVO: Importando a biblioteca JWT
+import { BadgeSystem } from '../domain/lib/badgeSystem'; // NOVO: Sistema de badges
 
 export async function userRoutes(fastify: FastifyInstance) {
 
@@ -25,8 +26,18 @@ export async function userRoutes(fastify: FastifyInstance) {
       data: { name, email, password: hashedPassword },
     });
 
+    // 🌟 NOVO: Verificar e conceder badge de Beta Tester
+    const betaBadge = await BadgeSystem.checkAndAwardBetaTesterBadge(user.id);
+    
     const { password: _, ...userWithoutPassword } = user;
-    return reply.status(201).send(userWithoutPassword);
+    
+    // Se ganhou a badge de beta tester, incluir no retorno
+    const response = {
+      ...userWithoutPassword,
+      newBadge: betaBadge // null se não ganhou, objeto Badge se ganhou
+    };
+    
+    return reply.status(201).send(response);
   });
 
 
@@ -67,5 +78,30 @@ export async function userRoutes(fastify: FastifyInstance) {
       message: 'Login bem-sucedido!',
       token,
     });
+  });
+
+  // 🏆 NOVO: Rota para buscar badges do usuário autenticado
+  fastify.get('/badges', {
+    preHandler: [fastify.authenticate]
+  }, async (request, reply) => {
+    try {
+      const userId = (request.user as any).id;
+      const badges = await BadgeSystem.getUserBadges(userId);
+      
+      // Buscar informações do usuário incluindo status de beta tester
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+      
+      return reply.send({
+        badges,
+        betaTester: (user as any)?.isBetaTester ? {
+          number: (user as any).betaTesterNumber,
+          status: `Beta Tester #${(user as any).betaTesterNumber}`
+        } : null
+      });
+    } catch (error) {
+      return reply.status(500).send({ error: 'Erro ao buscar badges.' });
+    }
   });
 }

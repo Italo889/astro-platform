@@ -17,7 +17,12 @@ model User {
   password  String   // No futuro, guardaremos o hash da senha aqui.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  
+  // Sistema de Badges
+  isBetaTester Boolean @default(false)
+  betaTesterNumber Int? // Número do beta tester (1, 2, 3... até 20)
+  badges Json? // Array de badges que o usuário possui
+  
   // Relação: Um usuário pode ter muitos relatórios.
   reports   Report[]
 }

@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Menu, X, WandSparkles, KeyRound } from 'lucide-react';
 import { LogoSymbol } from '../ui/LogoSymbol';
+import { BadgeCollection } from '../ui/Badge/Badge';
+import { useBadges } from '../../hooks/useBadges';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 
@@ -99,6 +101,7 @@ export const Header: FC = () => {
   const openAuthModal = useUIStore((state) => state.openAuthModal);
   
   const { user, logout } = useAuthStore();
+  const { badges, isBetaTester, betaTesterNumber } = useBadges();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -380,6 +383,28 @@ export const Header: FC = () => {
                     <span className="hidden lg:inline font-light relative z-10">
                       Olá, {user.name.split(' ')[0]}
                     </span>
+                    
+                    {/* 🌟 Beta Tester Badge */}
+                    {isBetaTester && (
+                      <motion.div
+                        className="hidden lg:flex items-center space-x-1 px-2 py-1 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-full border border-yellow-400/30"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        <span className="text-xs">🌟</span>
+                        <span className="text-xs font-medium text-yellow-300">
+                          Beta #{betaTesterNumber}
+                        </span>
+                      </motion.div>
+                    )}
+                    
+                    {/* 🏆 Badges Collection */}
+                    {badges.length > 0 && (
+                      <div className="hidden lg:flex">
+                        <BadgeCollection badges={badges} maxDisplay={3} size="small" />
+                      </div>
+                    )}
                   </Link>
                   
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
