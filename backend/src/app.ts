@@ -39,9 +39,18 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
     ];
 
 server.register(cors, {
-  origin: allowedOrigins,
+  origin: [
+    "http://localhost:5173",                     // Vite dev server
+    "http://localhost:3000",                     // fallback localhost
+    "http://localhost:3333",                     // nosso backend dev
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000", 
+    "http://127.0.0.1:3333",
+    "https://arcano-1f10c3cc540d.herokuapp.com", // frontend atual em Heroku
+    "https://arcano-1a7a1b6d1bec.herokuapp.com", // URL problemática (temporário)
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With']
 });
 server.register(helmet, {
