@@ -4,6 +4,7 @@ import { sumAllDigits, sumFromName, sumDateAsIntegers, calculateAnnualSum, reduc
 // --- 1. Importa as DUAS funções de cálculo do nome ---
 import { calculateCabalisticArcanum, calculateGematriaArcanum } from "./lib/nameAnalysis"; 
 import { getArcanaByNumber } from "./lib/arcana";
+import { computeSynastry } from "./lib/synastry";
 
 export async function computeReport(input: BirthInput): Promise<PersonalReport> {
   if (!input.birthTime || !input.birthPlace) {
@@ -71,3 +72,6 @@ export async function computeReport(input: BirthInput): Promise<PersonalReport> 
   
   return { astrology, numerology, arcana, summary };
 }
+
+// Exporta também a função de sinastria
+export { computeSynastry };
