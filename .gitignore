@@ -24,7 +24,7 @@ backend/.env
 backend/.env.local
 backend/.env.production
 /env.production
-
+/dist
 # Arquivos de Sistema Operacional
 .DS_Store
 Thumbs.db

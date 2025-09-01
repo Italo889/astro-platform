@@ -12,3 +12,4 @@ backend/.env.local
 backend/.env.production
 
 /src/generated/prisma
+/dist
