@@ -23,9 +23,26 @@ dotenv.config();
 const server = Fastify({ logger: true });
 
 // --- Plugins (Middleware) ---
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+  ? [
+      'https://arcano-1f10c3cc540d.herokuapp.com', // frontend
+      'https://arcano-1a7a1b6d1bec.herokuapp.com', // Seu frontend em produção
+      'https://*.herokuapp.com' // Outros subdomínios Heroku se necessário
+    ]
+  : [
+      'http://localhost:5173',
+      'http://localhost:4321', 
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:4321',
+      'http://127.0.0.1:3000'
+    ];
+
 server.register(cors, {
-  origin: true, // Permitir todas as origens em produção
+  origin: allowedOrigins,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With']
 });
 server.register(helmet, {
   contentSecurityPolicy: {

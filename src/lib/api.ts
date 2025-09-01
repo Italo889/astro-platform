@@ -43,3 +43,22 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// INTERCEPTOR DE RESPOSTA: Para tratar erros de CORS e outros
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === 'ERR_NETWORK' || error.message.includes('CORS')) {
+      console.error('Erro CORS: Servidor API precisa permitir requisições de:', window.location.origin);
+      throw new Error('Servidor temporariamente indisponível. Tente novamente em alguns minutos.');
+    }
+    
+    if (error.response?.status === 401) {
+      // Token expirado ou inválido
+      useAuthStore.getState().logout();
+      window.location.href = '/login';
+    }
+    
+    return Promise.reject(error);
+  }
+);
