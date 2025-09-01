@@ -142,7 +142,7 @@ const LoginForm: FC<{ onSwitch: () => void }> = ({ onSwitch }) => {
             disabled={isLoading} 
             className="w-full py-5 text-lg font-['Cinzel_Decorative'] font-bold tracking-wide uppercase
                        bg-[#FFD700] hover:bg-[#FFD700]/90
-                       text-[#161221] border-0 rounded-xl 
+                       text-[#000000] border-0 rounded-xl 
                        shadow-lg shadow-[#FFD700]/40 hover:shadow-xl hover:shadow-[#FFD700]/60
                        transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed
                        hover:scale-[1.02] active:scale-[0.98]"
@@ -340,9 +340,9 @@ const RegisterForm: FC<{ onSwitch: () => void }> = ({ onSwitch }) => {
             variant="primary" 
             disabled={isLoading} 
             className="w-full py-5 text-lg font-['Cinzel_Decorative'] font-bold tracking-wide uppercase
-                       bg-[#8b63e9] hover:bg-[#8b63e9]/90
-                       text-[#F5F5F5] border-0 rounded-xl 
-                       shadow-lg shadow-[#8b63e9]/40 hover:shadow-xl hover:shadow-[#8b63e9]/60
+                       bg-[#FFD700] hover:bg-[#FFD700]/90
+                       text-[#000000] border-0 rounded-xl 
+                       shadow-lg shadow-[#FFD700]/40 hover:shadow-xl hover:shadow-[#FFD700]/60
                        transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed
                        hover:scale-[1.02] active:scale-[0.98]"
           >

@@ -128,7 +128,7 @@ astro-platform/
 ├── 📁 backend/
 │   ├── 📁 prisma/
 │   │   ├── 📄 schema.prisma  # Database schema (Users, Reports, Cities, Subscribers)
-│   │   └── 📁 migrations/    # Database migrations
+│   │   └── 📁 migrations/    # Database migrations 
 │   └── 📁 src/
 │       ├── 📁 @types/        # swisseph.d.ts (definições TypeScript)
 │       ├── 📁 data/          # major_arcana.json (dados dos arcanos)
