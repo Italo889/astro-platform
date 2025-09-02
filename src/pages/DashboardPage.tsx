@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { LoaderCircle, Telescope, Sparkles, Moon, Sun, Star, ChevronRight, Award } from 'lucide-react';
+import { LoaderCircle, Telescope, Sparkles, Moon, Sun, Star, ChevronRight, Award, User, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getMyReports } from '../services/reportService';
@@ -12,6 +12,8 @@ import { PowerTriad } from '../components/features/dashboard/PowerTriad';
 import { ActionButtons } from '../components/features/dashboard/ActionButtons';
 import { RecentReportsList } from '../components/features/dashboard/RecentReportsList';
 import BadgeModal from '../components/features/dashboard/BadgeModal';
+import ProfileModal from '../components/modals/ProfileModal';
+import ChangelogModal from '../components/modals/ChangelogModal';
 import { useBadges } from '../hooks/useBadges';
 import type { SavedReport, PersonalReport } from '../domain/types';
 
@@ -110,6 +112,8 @@ const DashboardPage: FC = () => {
   const { scrollY } = useScroll();
   const headerOpacity = useTransform(scrollY, [0, 100], [1, 0.8]);
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isChangelogModalOpen, setIsChangelogModalOpen] = useState(false);
   const [badgeMessage, setBadgeMessage] = useState<string | undefined>(undefined);
   
   const { data: reports, isLoading, isError } = useQuery<SavedReport[]>({
@@ -325,6 +329,28 @@ const DashboardPage: FC = () => {
                   <span className="text-sm text-text-muted">Energia Cósmica Ativa</span>
                 </div>
                 
+                {/* Botão de Perfil */}
+                <motion.button
+                  onClick={() => setIsProfileModalOpen(true)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-4 py-2 bg-surface/50 backdrop-blur-sm rounded-full border border-surface/50 flex items-center gap-2 hover:bg-surface/70 transition-colors"
+                >
+                  <User className="text-primary" size={16} />
+                  <span className="text-sm text-text-muted">Meu Perfil</span>
+                </motion.button>
+
+                {/* Botão de Changelog */}
+                <motion.button
+                  onClick={() => setIsChangelogModalOpen(true)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-4 py-2 bg-surface/50 backdrop-blur-sm rounded-full border border-surface/50 flex items-center gap-2 hover:bg-surface/70 transition-colors"
+                >
+                  <Sparkles className="text-accent" size={16} />
+                  <span className="text-sm text-text-muted">Novidades</span>
+                </motion.button>
+                
                 {/* Botão de Conquistas */}
                 <motion.button
                   onClick={() => setIsBadgeModalOpen(true)}
@@ -379,6 +405,18 @@ const DashboardPage: FC = () => {
             console.log(`🎉 ${result.newBadges.length} nova(s) conquista(s) desbloqueada(s)!`);
           }
         }}
+      />
+
+      {/* Modal de Perfil - LGPD */}
+      <ProfileModal 
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
+
+      {/* Modal de Changelog */}
+      <ChangelogModal 
+        isOpen={isChangelogModalOpen}
+        onClose={() => setIsChangelogModalOpen(false)}
       />
     </div>
   );

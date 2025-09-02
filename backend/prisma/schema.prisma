@@ -25,6 +25,9 @@ model User {
   
   // Relação: Um usuário pode ter muitos relatórios.
   reports   Report[]
+  
+  // Relação: Um usuário pode ter criado muitos changelogs (apenas admins)
+  changelogs Changelog[]
 }
 
 // Modelo para os Relatórios Pessoais gerados.
@@ -61,4 +64,28 @@ model City {
   population  BigInt
 
   @@index([asciiName])
+}
+
+// Modelo para Changelog/Release Notes
+model Changelog {
+  id          String   @id @default(uuid())
+  version     String   @unique // ex: "1.2.0", "1.2.1"
+  title       String   // ex: "Novos Gráficos no Dashboard Admin"
+  description String?  @db.Text // Descrição detalhada opcional
+  releaseDate DateTime @default(now())
+  isPublished Boolean  @default(false)
+  
+  // Categorias das mudanças
+  changes     Json     // Array de objetos: [{ type: "feature|fix|improvement", description: "...", icon: "✨" }]
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Autor (referência ao admin que criou)
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String
+
+  @@index([releaseDate])
+  @@index([isPublished])
 }

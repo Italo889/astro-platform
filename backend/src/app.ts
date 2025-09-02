@@ -2,6 +2,8 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import staticFiles from "@fastify/static";
+import swagger from "@fastify/swagger";
+import swaggerUI from "@fastify/swagger-ui";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
@@ -18,6 +20,9 @@ import { reportRoutes } from "./routes/reportRoutes";
 import { calculationRoutes } from "./routes/calculationRoutes";
 import { synastryRoutes } from "./routes/synastryRoutes";
 import { newsletterRoutes } from './routes/newsletterRoutes';
+import { adminRoutes } from './routes/adminRoutes';
+import { changelogRoutes } from './routes/changelogRoutes';
+import { allSchemas } from './schemas/apiSchemas';
 
 const server = Fastify({ 
   logger: true // Configuração simples do logger
@@ -27,7 +32,6 @@ const server = Fastify({
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [
       'https://arcano-1f10c3cc540d.herokuapp.com', // Frontend em produção
-      'https://arcano.herokuapp.com' // Possível domínio alternativo
     ]
   : [
       'http://localhost:5173', // Vite dev server
@@ -77,6 +81,60 @@ server.register(helmet, {
   referrerPolicy: { policy: 'same-origin' }
 });
 
+// --- Configuração do Swagger ---
+if (process.env.NODE_ENV !== 'production') {
+  // Swagger apenas em desenvolvimento
+  server.register(swagger, {
+    swagger: {
+      info: {
+        title: 'Arcano Platform API',
+        description: 'API completa para cálculos astrológicos, numerologia e tarô',
+        version: '2.1.0',
+        contact: {
+          name: 'Italo Evangelista',
+          email: 'italo889@gmail.com'
+        }
+      },
+      host: process.env.NODE_ENV === 'production' 
+        ? 'arcano-1f10c3cc540d.herokuapp.com' 
+        : 'localhost:3333',
+      basePath: '/api',
+      schemes: process.env.NODE_ENV === 'production' ? ['https'] : ['http'],
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      definitions: allSchemas,
+      securityDefinitions: {
+        Bearer: {
+          type: 'apiKey',
+          name: 'Authorization',
+          in: 'header',
+          description: 'JWT token. Formato: Bearer <token>'
+        }
+      },
+      tags: [
+        { name: 'Auth', description: 'Autenticação de usuários' },
+        { name: 'Users', description: 'Gerenciamento de usuários' },
+        { name: 'Calculations', description: 'Cálculos astrológicos' },
+        { name: 'Reports', description: 'Relatórios pessoais' },
+        { name: 'Synastry', description: 'Análise de compatibilidade' },
+        { name: 'Newsletter', description: 'Sistema de newsletter' },
+        { name: 'Changelog', description: 'Changelog da plataforma' },
+        { name: 'Admin', description: 'Funcionalidades administrativas' }
+      ]
+    }
+  });
+
+  server.register(swaggerUI, {
+    routePrefix: '/api/docs',
+    uiConfig: {
+      docExpansion: 'list',
+      deepLinking: false
+    },
+    staticCSP: true,
+    transformStaticCSP: (header) => header
+  });
+}
+
 // --- Plugin de Autenticação ---
 server.register(authPlugin);
 
@@ -98,14 +156,43 @@ if (fs.existsSync(frontendDistPath)) {
 
 // --- Rotas da API ---
 server.get("/api", async () => {
-  return { message: "Arcano API está no ar 🔮", timestamp: new Date().toISOString() };
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://arcano-1f10c3cc540d.herokuapp.com' 
+    : 'http://localhost:3333';
+  const docsUrl = process.env.NODE_ENV !== 'production' ? `${baseUrl}/api/docs` : null;
+  
+  return { 
+    message: "Arcano API está no ar 🔮", 
+    timestamp: new Date().toISOString(),
+    version: "2.1.0",
+    environment: process.env.NODE_ENV || 'development',
+    documentation: docsUrl,
+    endpoints: {
+      auth: "/api/users",
+      calculations: "/api/calculate", 
+      reports: "/api/reports",
+      synastry: "/api/calculate/synastry",
+      newsletter: "/api/newsletter",
+      changelog: "/api/changelog",
+      admin: "/api/admin"
+    }
+  };
 });
+
+// Rota de redirecionamento para documentação
+if (process.env.NODE_ENV !== 'production') {
+  server.get("/docs", async (request, reply) => {
+    return reply.redirect('/api/docs');
+  });
+}
 
 server.register(userRoutes, { prefix: '/api/users' });
 server.register(reportRoutes, { prefix: '/api/reports' });
 server.register(calculationRoutes, { prefix: '/api/calculate' });
 server.register(synastryRoutes, { prefix: '/api/calculate/synastry' });
 server.register(newsletterRoutes, { prefix: '/api/newsletter' });
+server.register(adminRoutes, { prefix: '/api/admin' });
+server.register(changelogRoutes, { prefix: '/api/changelog' });
 
 // --- Rota de Fallback para SPA (Single Page Application) ---
 // Esta deve ser a última rota registrada

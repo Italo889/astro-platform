@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 interface UserPayload {
   id: string;
   name: string;
+  email: string;
 }
 
 // ESTA É A MÁGICA: Aprimoramos as interfaces do Fastify para que o TypeScript

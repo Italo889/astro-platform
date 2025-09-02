@@ -78,6 +78,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       { 
         id: user.id,
         name: user.name,
+        email: user.email,
       },
       process.env.JWT_SECRET as string, // Nosso segredo do .env
       {
@@ -145,6 +146,254 @@ export async function userRoutes(fastify: FastifyInstance) {
     } catch (error) {
       fastify.log.error(error);
       return reply.status(500).send({ error: 'Erro ao verificar badges retroativas.' });
+    }
+  });
+
+  // 🛡️ ROTAS LGPD - Privacidade e Gerenciamento de Dados
+
+  // Rota: GET /users/profile - Buscar dados do perfil do usuário
+  fastify.get('/profile', {
+    preHandler: [fastify.authenticate]
+  }, async (request, reply) => {
+    try {
+      const userId = (request.user as any).id;
+      
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+          isBetaTester: true,
+          betaTesterNumber: true,
+          badges: true
+        }
+      });
+
+      if (!user) {
+        return reply.status(404).send({ error: 'Usuário não encontrado.' });
+      }
+
+      return reply.send(user);
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Erro ao buscar dados do perfil.' });
+    }
+  });
+
+  // Rota: PUT /users/profile - Atualizar dados do perfil
+  fastify.put('/profile', {
+    preHandler: [fastify.authenticate]
+  }, async (request, reply) => {
+    try {
+      const userId = (request.user as any).id;
+      const { name, email } = request.body as { name?: string; email?: string };
+
+      // Validações básicas
+      if (name && name.length < 2) {
+        return reply.status(400).send({ error: 'Nome deve ter pelo menos 2 caracteres.' });
+      }
+
+      if (email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return reply.status(400).send({ error: 'Email inválido.' });
+        }
+
+        // Verificar se o email já está em uso por outro usuário
+        const existingUser = await prisma.user.findUnique({
+          where: { email }
+        });
+
+        if (existingUser && existingUser.id !== userId) {
+          return reply.status(409).send({ error: 'Este email já está em uso por outro usuário.' });
+        }
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          ...(name && { name }),
+          ...(email && { email })
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+          isBetaTester: true,
+          betaTesterNumber: true
+        }
+      });
+
+      return reply.send({
+        message: 'Perfil atualizado com sucesso!',
+        user: updatedUser
+      });
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Erro ao atualizar perfil.' });
+    }
+  });
+
+  // Rota: POST /users/change-password - Alterar senha
+  fastify.post('/change-password', {
+    preHandler: [fastify.authenticate]
+  }, async (request, reply) => {
+    try {
+      const userId = (request.user as any).id;
+      const { currentPassword, newPassword } = request.body as { 
+        currentPassword: string; 
+        newPassword: string; 
+      };
+
+      if (!currentPassword || !newPassword) {
+        return reply.status(400).send({ 
+          error: 'Senha atual e nova senha são obrigatórias.' 
+        });
+      }
+
+      if (newPassword.length < 6) {
+        return reply.status(400).send({ 
+          error: 'Nova senha deve ter pelo menos 6 caracteres.' 
+        });
+      }
+
+      // Buscar usuário e verificar senha atual
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+
+      if (!user) {
+        return reply.status(404).send({ error: 'Usuário não encontrado.' });
+      }
+
+      const isCurrentPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+      if (!isCurrentPasswordCorrect) {
+        return reply.status(400).send({ error: 'Senha atual incorreta.' });
+      }
+
+      // Gerar hash da nova senha
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+      // Atualizar senha no banco
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedNewPassword }
+      });
+
+      return reply.send({ message: 'Senha alterada com sucesso!' });
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Erro ao alterar senha.' });
+    }
+  });
+
+  // Rota: GET /users/data-export - Exportar todos os dados do usuário (LGPD)
+  fastify.get('/data-export', {
+    preHandler: [fastify.authenticate]
+  }, async (request, reply) => {
+    try {
+      const userId = (request.user as any).id;
+
+      // Buscar todos os dados do usuário
+      const userData = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+          updatedAt: true,
+          isBetaTester: true,
+          betaTesterNumber: true,
+          badges: true
+        }
+      });
+
+      const userReports = await prisma.report.findMany({
+        where: { ownerId: userId },
+        select: {
+          id: true,
+          createdAt: true,
+          content: true
+        }
+      });
+
+      if (!userData) {
+        return reply.status(404).send({ error: 'Usuário não encontrado.' });
+      }
+
+      const exportData = {
+        exportedAt: new Date().toISOString(),
+        userData,
+        reports: userReports,
+        summary: {
+          totalReports: userReports.length,
+          accountCreated: userData.createdAt,
+          dataTypes: ['profile', 'reports', 'badges']
+        }
+      };
+
+      // Definir headers para download
+      reply.header('Content-Type', 'application/json');
+      reply.header('Content-Disposition', `attachment; filename="arcano-data-export-${userId}.json"`);
+      
+      return reply.send(exportData);
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Erro ao exportar dados.' });
+    }
+  });
+
+  // Rota: DELETE /users/account - Excluir conta (LGPD)
+  fastify.delete('/account', {
+    preHandler: [fastify.authenticate]
+  }, async (request, reply) => {
+    try {
+      const userId = (request.user as any).id;
+      const { confirmPassword } = request.body as { confirmPassword: string };
+
+      if (!confirmPassword) {
+        return reply.status(400).send({ 
+          error: 'Senha de confirmação é obrigatória para excluir a conta.' 
+        });
+      }
+
+      // Verificar senha antes de excluir
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+
+      if (!user) {
+        return reply.status(404).send({ error: 'Usuário não encontrado.' });
+      }
+
+      const isPasswordCorrect = await bcrypt.compare(confirmPassword, user.password);
+      if (!isPasswordCorrect) {
+        return reply.status(400).send({ error: 'Senha incorreta.' });
+      }
+
+      // Excluir todos os dados relacionados ao usuário
+      // O Prisma irá cuidar da cascade deletion se configurado
+      await prisma.$transaction([
+        // Excluir relatórios primeiro
+        prisma.report.deleteMany({
+          where: { ownerId: userId }
+        }),
+        // Excluir usuário
+        prisma.user.delete({
+          where: { id: userId }
+        })
+      ]);
+
+      return reply.send({ 
+        message: 'Conta excluída com sucesso. Todos os seus dados foram removidos permanentemente.' 
+      });
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Erro ao excluir conta.' });
     }
   });
 }

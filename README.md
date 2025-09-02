@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Arcano Platform Banner](https://img.shields.io/badge/Arcano-Platform-8b63e9?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDIxQzE2Ljk3MDYgMjEgMjEgMTYuOTcwNiAyMSAxMkMyMSA3LjAyOTQ0IDE2Ljk3MDYgMyAxMiAzQzcuMDI5NDQgMyAzIDcuMDI5NDQgMyAxMkMzIDE2Ljk3MDYgNy4wMjk0NCAyMSAxMiAyMVoiIHN0cm9rZT0iI0ZGRDcwMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHA%2BPC9zdmc%2B&logoColor=FFD700)
+![Arcano Platform Banner](https://res.cloudinary.com/dpwpaaqeh/image/upload/v1756791062/Arcano-bannerv1.jpg)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19+-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
 [![Fastify](https://img.shields.io/badge/Fastify-5.0+-000000?style=for-the-badge&logo=fastify&logoColor=white)](https://fastify.dev/)
@@ -10,7 +10,7 @@
 
 **Desvende os mistérios do universo interior através da astrologia, tarô e numerologia**
 
-[Demo](#) • [Documentação](#) • [Contribuir](#-contribuindo) • [Changelog](#)
+[Demo](#) • [Documentação](#) • [Contribuir](#-contribuindo) • [Changelog](#-changelog)
 
 </div>
 
@@ -278,6 +278,63 @@ npm run test:e2e         # Testes end-to-end
 - [ ] 📅 **Calendário Cósmico** - Eventos astronômicos
 - [ ] 🎯 **Recomendações** - Conteúdo personalizado
 - [ ] 💬 **Chat Comunitário** - Fórum de usuários
+
+## 📋 **Changelog**
+
+Todas as mudanças importantes do projeto são documentadas aqui. Para ver o changelog completo e interativo da aplicação, acesse o painel admin ou [clique aqui](https://arcano-1f10c3cc540d.herokuapp.com/) e faça login como administrador.
+
+### **[v2.1.0] - 2025-09-02**
+
+#### ✨ **Features**
+- 🔄 **Sistema de Changelog Completo**: Implementado sistema para documentar atualizações do Heroku
+- 📋 **Modal de Changelog**: Interface elegante para usuários visualizarem mudanças
+- 🛠️ **Admin Panel**: Painel completo para gerenciar changelogs (CRUD)
+- 📊 **Versionamento**: Sistema de versões para rastrear releases
+- 🔐 **Controle de Acesso**: Apenas admins podem gerenciar changelogs
+- ✅ **Status de Publicação**: Rascunhos e changelogs publicados
+
+#### 🎨 **UI/UX**  
+- 💎 **Design Responsivo**: Modal adaptável para mobile e desktop
+- 🎭 **Animações Suaves**: Transições com Framer Motion
+- 🏷️ **Categorização**: Mudanças organizadas por tipo (features, bugfixes, etc.)
+- 🎨 **Ícones Intuitivos**: Sistema visual para diferentes tipos de mudança
+
+#### 🔧 **Backend**
+- 📊 **Prisma Schema**: Novo modelo `Changelog` no banco de dados
+- 🚀 **API REST**: 8 endpoints completos para gerenciamento
+- 🛡️ **Middleware Admin**: Proteção baseada em `OWNER_EMAIL`
+- 🔍 **Validação Zod**: Schemas para validação de dados
+
+#### 📱 **Frontend**
+- ⚛️ **Componentes React**: Modal e página admin implementados
+- 🔄 **TanStack Query**: Gerenciamento de estado para API calls
+- 🎯 **TypeScript**: Interfaces completas para changelog
+- 📋 **Formulários**: Interface intuitiva para criar/editar changelogs
+
+### **[v2.0.0] - 2025-08-30**
+#### ✨ **Features**
+- 🎯 **Sistema de Badges Beta**: Badges especiais para beta testers
+- 📧 **Newsletter Integrada**: Sistema completo de newsletter
+- 📊 **Dashboard Admin**: Painel administrativo com métricas
+- 👤 **Perfil de Usuário**: Sistema de perfis personalizado
+
+### **[v1.5.0] - 2025-08-25**  
+#### ✨ **Features**
+- 💫 **Sinastria Completa**: Análise de compatibilidade entre pessoas
+- 🎭 **Portal Exclusivo**: FeatureGate para membros premium
+- 🔮 **Matriz de Compatibilidade**: 250+ combinações
+- 📊 **Relatórios Dinâmicos**: Análises multidimensionais
+
+### **[v1.0.0] - 2025-08-01**
+#### 🎉 **Lançamento Inicial**
+- 🪐 **Mapa Astral**: Cálculos completos com Swiss Ephemeris
+- 🔮 **Sistema de Tarô**: 22 Arcanos Maiores com interpretações
+- 🧮 **Numerologia**: Dupla análise (Cabalístico + Gematria)
+- 🔐 **Sistema de Auth**: JWT + refresh tokens
+- 🎨 **UI Mística**: Design system completo
+- 📱 **Dashboard**: Santuário pessoal para usuários
+
+---
 
 ## 🤝 **Contribuindo**
 

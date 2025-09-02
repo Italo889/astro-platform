@@ -8,7 +8,7 @@
     "build": "npm run build:backend && npm run build:frontend && npm run copy:frontend",
     "build:backend": "cd backend && npm install --include=dev && npm run build:safe",
     "build:frontend": "tsc --noEmitOnError false && vite build",
-    "copy:frontend": "cp -r dist/* backend/dist/ 2>/dev/null || true",
+    "copy:frontend": "xcopy /E /Y dist backend\\dist\\ || echo \"Frontend copied\"",
     "start": "node backend/dist/app.js",
     "heroku-postbuild": "npm install && vite build && cd backend && npm install && npm run build",
     "lint": "eslint .",

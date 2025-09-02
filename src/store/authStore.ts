@@ -7,6 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 interface UserPayload {
   id: string;
   name: string;
+  email: string;
 }
 
 interface AuthState {
@@ -25,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
       login: (token) => {
         // Decodifica o token para extrair as informações do usuário
         const decoded = jwtDecode<UserPayload>(token);
-        set({ token, user: { id: decoded.id, name: decoded.name } });
+        set({ token, user: { id: decoded.id, name: decoded.name, email: decoded.email } });
       },
       
       logout: () => {

@@ -14,6 +14,9 @@ import ReportPage from './pages/ReportPage';
 import SynastryPage from './pages/SynastryPage';
 import SynastryReportPage from './pages/SynastryReportPage';
 import DashboardPage from './pages/DashboardPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminChangelogPage from './pages/AdminChangelogPage';
+import ChangelogPage from './pages/ChangelogPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'; // <-- IMPORTAÇÃO
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
@@ -28,11 +31,14 @@ const router = createBrowserRouter([
       { path: '/resultado/:reportId', element: <ReportPage /> },
       { path: '/sinastria', element: <SynastryPage /> },
       { path: '/sinastria/resultado', element: <SynastryReportPage /> },
+      { path: '/changelog', element: <ChangelogPage /> },
       { path: '/politica-de-privacidade', element: <PrivacyPolicyPage /> }, // <-- NOVA ROTA
       {
         element: <ProtectedRoute />,
         children: [
           { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/admin', element: <AdminDashboardPage /> },
+          { path: '/admin/changelog', element: <AdminChangelogPage /> },
         ],
       },
     ],

@@ -4,6 +4,7 @@ exports.reportRoutes = reportRoutes;
 const zod_1 = require("zod");
 const prisma_1 = require("../prisma");
 const engine_1 = require("../domain/engine");
+const badgeSystem_1 = require("../domain/lib/badgeSystem");
 // Schema de validação para a entrada do POST
 const birthInputSchema = zod_1.z.object({
     name: zod_1.z.string().min(3, { message: 'O nome completo é obrigatório.' }),
@@ -29,7 +30,27 @@ async function reportRoutes(app) {
                     ownerId: userId,
                 }
             });
-            return reply.status(201).send(newReport);
+            // 🏆 NOVO: Sistema de Badges - Conceder badge do primeiro relatório
+            let newBadge = null;
+            try {
+                // Verifica se é o primeiro relatório do usuário
+                const userReportsCount = await prisma_1.prisma.report.count({
+                    where: { ownerId: userId }
+                });
+                if (userReportsCount === 1) {
+                    newBadge = await badgeSystem_1.BadgeSystem.awardBadge(userId, 'FIRST_REPORT');
+                }
+            }
+            catch (badgeError) {
+                // Log do erro mas não falha a criação do relatório
+                app.log.error({ error: badgeError }, 'Erro ao conceder badge do primeiro relatório');
+            }
+            // Resposta incluindo badge conquistada (se houver)
+            const response = {
+                ...newReport,
+                newBadge
+            };
+            return reply.status(201).send(response);
         }
         catch (error) {
             if (error instanceof zod_1.z.ZodError) {
