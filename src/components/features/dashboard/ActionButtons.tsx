@@ -5,14 +5,14 @@ import { Link } from 'react-router-dom';
 const ActionButton: FC<{ to: string; icon: JSX.Element; title: string; description: string }> = ({ to, icon, title, description }) => (
   <Link 
     to={to}
-    className="flex-1 bg-surface/50 p-6 rounded-xl hover:bg-surface/80
+    className="flex-1 bg-surface/50 padding-responsive-md rounded-xl hover:bg-surface/80
                border border-surface hover:border-accent/50 transition-all duration-300"
   >
-    <div className="flex items-start gap-4">
-      <div className="text-accent mt-1">{icon}</div>
-      <div>
-        <h3 className="font-serif text-lg text-text-base">{title}</h3>
-        <p className="text-sm text-text-muted mt-1">{description}</p>
+    <div className="flex items-start space-responsive-sm">
+      <div className="text-accent mt-1 flex-shrink-0">{icon}</div>
+      <div className="min-w-0 flex-1">
+        <h3 className="font-serif text-responsive-base sm:text-responsive-lg text-text-base truncate">{title}</h3>
+        <p className="text-responsive-xs sm:text-responsive-sm text-text-muted mt-1 line-clamp-2">{description}</p>
       </div>
     </div>
   </Link>
@@ -20,7 +20,7 @@ const ActionButton: FC<{ to: string; icon: JSX.Element; title: string; descripti
 
 export const ActionButtons: FC = () => {
   return (
-    <div className="flex flex-col md:flex-row gap-6">
+    <div className="flex-responsive space-responsive-md">
       <ActionButton
         to="/resultado" // Ajuste a rota se necessário
         icon={<User />}

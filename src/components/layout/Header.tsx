@@ -472,11 +472,11 @@ export const Header: FC = () => {
           </div>
         </div>
 
-        {/* ESTRUTURA MOBILE Premium */}
+        {/* ESTRUTURA MOBILE Premium - MODIFICADA PARA RESPONSIVIDADE */}
         <div className="md:hidden flex w-full justify-between items-center">
           <motion.a 
             href="/" 
-            className="flex items-center gap-3 p-2 rounded-xl relative"
+            className="flex items-center gap-2 p-2 rounded-xl relative"
             initial={{ opacity: 0, x: -20, filter: "blur(8px)" }}
             animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
             transition={{ delay: 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -494,11 +494,11 @@ export const Header: FC = () => {
               transition={{ duration: 0.5 }}
               className="relative z-10"
             >
-              <LogoSymbol className="text-[#8b63e9]"/>
+              <LogoSymbol className="text-[#8b63e9] w-6 h-6"/>
             </motion.div>
             
             <motion.h2 
-              className="text-lg font-bold tracking-[0.1em] uppercase text-[#F5F5F5] relative z-10"
+              className="text-base font-bold tracking-[0.1em] uppercase text-[#F5F5F5] relative z-10"
               style={{ fontFamily: 'Cinzel Decorative, serif' }}
               whileHover={{ 
                 color: '#8b63e9',
@@ -509,13 +509,13 @@ export const Header: FC = () => {
             </motion.h2>
           </motion.a>
           
+          {/* Botão simplificado para mobile - removido ícone de explore */}
           <motion.button 
             onClick={toggleMenu} 
-            className="p-3 relative z-50 rounded-xl transition-all duration-300 overflow-hidden" 
+            className="p-2 relative z-50 rounded-xl transition-all duration-300" 
             style={{
               backgroundColor: 'rgba(47, 37, 70, 0.3)',
               backdropFilter: 'blur(10px)',
-              boxShadow: '0 4px 15px rgba(22, 18, 33, 0.4)'
             }}
             aria-label="Abrir menu"
             initial={{ opacity: 0, x: 20, filter: "blur(8px)" }}
@@ -523,17 +523,9 @@ export const Header: FC = () => {
             transition={{ delay: 0.2, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             whileHover={{ 
               scale: 1.05,
-              boxShadow: '0 6px 20px rgba(22, 18, 33, 0.6)',
             }}
             whileTap={{ scale: 0.95 }}
           >
-            {/* Efeito Shimmer no Botão Menu */}
-            <motion.div
-              className="absolute inset-0 bg-[#8b63e9]/20 opacity-0"
-              whileHover={{ opacity: [0, 1, 0], x: ['-100%', '100%'] }}
-              transition={{ duration: 0.8 }}
-            />
-
             <AnimatePresence mode="wait">
               <motion.div
                 key={isMenuOpen ? 'close' : 'open'}
@@ -544,9 +536,14 @@ export const Header: FC = () => {
                 className="relative z-10"
               >
                 {isMenuOpen ? (
-                  <X size={24} className="text-[#F5F5F5]"/>
+                  <X size={20} className="text-[#F5F5F5]"/>
                 ) : (
-                  <Menu size={24} className="text-[#8b63e9]"/>
+                  // Menu icon simplificado sem o ícone de explore
+                  <div className="flex flex-col gap-1">
+                    <div className="w-4 h-0.5 bg-[#8b63e9] rounded-full"></div>
+                    <div className="w-4 h-0.5 bg-[#8b63e9] rounded-full"></div>
+                    <div className="w-4 h-0.5 bg-[#8b63e9] rounded-full"></div>
+                  </div>
                 )}
               </motion.div>
             </AnimatePresence>
@@ -554,7 +551,7 @@ export const Header: FC = () => {
         </div>
       </motion.header>
 
-      {/* MENU MOBILE Premium com Arquitetura */}
+      {/* MENU MOBILE Premium com Arquitetura - OTIMIZADO PARA MOBILE */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -562,7 +559,7 @@ export const Header: FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-40 md:hidden"
           >
             {/* Background Arquitetural */}
             <div className="absolute inset-0 bg-[#161221]" />
@@ -592,12 +589,6 @@ export const Header: FC = () => {
                 transition={{ delay: 0.7, duration: 1.5 }}
                 className="absolute bottom-1/3 left-1/4 w-24 h-24 rounded-full opacity-0"
               />
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 0.3, y: [-10, 10, -10] }}
-                transition={{ delay: 1, duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-[#8b63e9]/40 rounded-full shadow-lg shadow-[#8b63e9]/50"
-              />
             </div>
             
             <motion.nav 
@@ -605,14 +596,14 @@ export const Header: FC = () => {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="h-full flex flex-col items-center justify-center gap-8 relative z-10 px-8"
+              className="h-full flex flex-col items-center justify-center gap-4 relative z-10 px-4 py-8"
             >
               {/* Ornamento Superior */}
               <motion.div
                 initial={{ opacity: 0, scaleX: 0 }}
                 animate={{ opacity: 1, scaleX: 1 }}
                 transition={{ delay: 0.3, duration: 0.8 }}
-                className="flex items-center mb-4"
+                className="flex items-center mb-2"
               >
                 <div className="w-8 h-px bg-[#8b63e9]/40" />
               </motion.div>
@@ -620,44 +611,51 @@ export const Header: FC = () => {
               {navLinks.map((link) => {
                 const IconComponent = link.icon;
                 return (
-                  <motion.div key={link.label} variants={menuItemVariants}>
+                  <motion.div key={link.label} variants={menuItemVariants} className="w-full max-w-xs">
                     <a 
                       href={link.href} 
-                      className="group flex items-center gap-6 p-5 hover:bg-[#2f2546]/30 rounded-3xl transition-all duration-400 min-w-[280px] backdrop-blur-sm relative overflow-hidden" 
-                      onClick={toggleMenu}
+                      className="group flex items-center gap-4 p-4 hover:bg-[#2f2546]/30 rounded-2xl transition-all duration-400 backdrop-blur-sm relative overflow-hidden" 
+                      onClick={(e) => {
+                        if (link.href.startsWith('#')) {
+                          e.preventDefault();
+                          toggleMenu();
+                          setTimeout(() => {
+                            const sectionId = link.href.substring(1);
+                            const element = document.getElementById(sectionId);
+                            if (element) {
+                              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                          }, 300);
+                        } else {
+                          toggleMenu();
+                        }
+                      }}
                     >
                       {/* Efeito de Energia do Link */}
                       <motion.div
-                        className="absolute inset-0 rounded-3xl opacity-0"
+                        className="absolute inset-0 rounded-2xl opacity-0"
                         whileHover={{
                           opacity: 1,
-                          boxShadow: '0 0 30px rgba(139, 99, 233, 0.15), inset 0 0 20px rgba(139, 99, 233, 0.05)',
+                          boxShadow: '0 0 20px rgba(139, 99, 233, 0.15), inset 0 0 15px rgba(139, 99, 233, 0.05)',
                         }}
                         transition={{ duration: 0.4 }}
                       />
 
                       {/* Ícone com Arquitetura */}
                       <motion.div 
-                        className="flex items-center justify-center w-16 h-16 rounded-2xl relative z-10"
+                        className="flex items-center justify-center w-12 h-12 rounded-xl relative z-10"
                         style={{
                           background: 'rgba(47, 37, 70, 0.6)',
                           border: '1px solid rgba(139, 99, 233, 0.25)',
-                          boxShadow: '0 4px 15px rgba(22, 18, 33, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+                          boxShadow: '0 4px 12px rgba(22, 18, 33, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
                         }}
                         whileHover={{
-                          scale: 1.1,
+                          scale: 1.05,
                           borderColor: 'rgba(139, 99, 233, 0.5)',
-                          boxShadow: '0 6px 25px rgba(22, 18, 33, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 20px rgba(139, 99, 233, 0.2)',
+                          boxShadow: '0 6px 20px rgba(22, 18, 33, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 15px rgba(139, 99, 233, 0.2)',
                         }}
                         transition={{ duration: 0.3 }}
                       >
-                        {/* Anel Orbital do Ícone */}
-                        <motion.div
-                          className="absolute inset-1 rounded-xl border border-[#8b63e9]/20 opacity-0"
-                          whileHover={{ opacity: 1, rotate: 90 }}
-                          transition={{ duration: 0.5 }}
-                        />
-                        
                         <motion.div 
                           className="text-[#8b63e9] group-hover:text-[#FFD700] transition-all duration-300 relative z-10"
                           whileHover={{ rotate: 15, scale: 1.1 }}
@@ -668,22 +666,22 @@ export const Header: FC = () => {
 
                       <div className="flex-1 relative z-10">
                         <motion.span 
-                          className="block text-2xl text-[#F5F5F5] transition-all duration-400 font-light tracking-wide"
+                          className="block text-lg text-[#F5F5F5] transition-all duration-400 font-light tracking-wide"
                           style={{ fontFamily: 'Marcellus SC, serif' }}
                           whileHover={{
                             color: '#8b63e9',
-                            textShadow: '0 0 15px rgba(139, 99, 233, 0.8)',
+                            textShadow: '0 0 12px rgba(139, 99, 233, 0.8)',
                           }}
                         >
                           {link.label}
                         </motion.span>
                         
                         <motion.div 
-                          className="w-0 h-0.5 bg-[#8b63e9] rounded-full mt-2 opacity-0"
+                          className="w-0 h-0.5 bg-[#8b63e9] rounded-full mt-1 opacity-0"
                           whileHover={{
                             width: '100%',
                             opacity: 1,
-                            boxShadow: '0 0 8px rgba(139, 99, 233, 0.6)',
+                            boxShadow: '0 0 6px rgba(139, 99, 233, 0.6)',
                           }}
                           transition={{ duration: 0.6, ease: "easeOut" }}
                         />
@@ -701,79 +699,65 @@ export const Header: FC = () => {
                 className="flex items-center my-2"
               >
                 <div className="w-4 h-px bg-[#8b63e9]/30" />
-                <div className="mx-3 w-1 h-1 bg-[#8b63e9]/40 rounded-full" />
-                
-                <motion.div 
-                  className="w-6 h-6 border border-[#8b63e9]/30 rounded-full flex items-center justify-center relative"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                >
-                  <motion.div 
-                    className="w-1.5 h-1.5 bg-[#8b63e9]/50 rounded-full"
-                    animate={{ 
-                      scale: [1, 1.5, 1],
-                      opacity: [0.5, 1, 0.5] 
-                    }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  />
-                </motion.div>
-                
-                <div className="mx-3 w-1 h-1 bg-[#8b63e9]/40 rounded-full" />
+                <div className="mx-2 w-1 h-1 bg-[#8b63e9]/40 rounded-full" />
                 <div className="w-4 h-px bg-[#8b63e9]/30" />
               </motion.div>
 
-              {/* Botões de Ação Premium */}
-              <motion.div variants={menuItemVariants} className="flex flex-col gap-4 w-72">
+              {/* Botões de Ação Premium - OTIMIZADOS PARA MOBILE */}
+              <motion.div variants={menuItemVariants} className="flex flex-col gap-3 w-full max-w-xs">
                 {user ? (
                   <>
-                    <motion.div 
-                      className="flex items-center justify-center gap-4 p-5 rounded-3xl backdrop-blur-sm relative overflow-hidden"
-                      style={{
-                        background: 'rgba(47, 37, 70, 0.4)',
-                        border: '1px solid rgba(139, 99, 233, 0.25)',
-                        boxShadow: '0 8px 32px rgba(22, 18, 33, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-                      }}
-                      whileHover={{
-                        borderColor: 'rgba(139, 99, 233, 0.4)',
-                        boxShadow: '0 12px 40px rgba(22, 18, 33, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                      }}
-                    >
+                    <Link to="/dashboard" onClick={toggleMenu}>
                       <motion.div 
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-[#1A1A2E] text-xl font-bold relative"
+                        className="flex items-center justify-center gap-3 p-4 rounded-2xl backdrop-blur-sm relative overflow-hidden cursor-pointer"
                         style={{
-                          background: '#FFD700',
-                          boxShadow: '0 4px 15px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+                          background: 'rgba(47, 37, 70, 0.4)',
+                          border: '1px solid rgba(139, 99, 233, 0.25)',
+                          boxShadow: '0 6px 20px rgba(22, 18, 33, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
                         }}
-                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        whileHover={{
+                          borderColor: 'rgba(139, 99, 233, 0.4)',
+                          boxShadow: '0 8px 25px rgba(22, 18, 33, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                          scale: 1.02,
+                        }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        {user.name.charAt(0).toUpperCase()}
-                      </motion.div>
-                      
-                      <div className="flex-1">
-                        <motion.span 
-                          className="text-[#F5F5F5] font-medium text-lg block" 
-                          style={{ fontFamily: 'Noto Sans, sans-serif' }}
-                          whileHover={{ color: '#8b63e9' }}
+                        <motion.div 
+                          className="w-10 h-10 rounded-xl flex items-center justify-center text-[#1A1A2E] text-lg font-bold relative"
+                          style={{
+                            background: '#FFD700',
+                            boxShadow: '0 3px 10px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+                          }}
+                          whileHover={{ scale: 1.08, rotate: 5 }}
                         >
-                          Olá, {user.name.split(' ')[0]}
-                        </motion.span>
-                        <div className="text-[#a495c6] text-sm" style={{ fontFamily: 'Noto Sans, sans-serif' }}>
-                          Bem-vindo de volta
+                          {user.name.charAt(0).toUpperCase()}
+                        </motion.div>
+                        
+                        <div className="flex-1">
+                          <motion.span 
+                            className="text-[#F5F5F5] font-medium text-base block" 
+                            style={{ fontFamily: 'Noto Sans, sans-serif' }}
+                          >
+                            Olá, {user.name.split(' ')[0]}
+                          </motion.span>
+                          <div className="text-[#a495c6] text-xs" style={{ fontFamily: 'Noto Sans, sans-serif' }}>
+                            Toque para acessar
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
+                      </motion.div>
+                    </Link>
                     
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Button 
                         variant="ghost" 
-                        className="w-full py-4 text-base rounded-3xl backdrop-blur-sm transition-all duration-400" 
+                        className="w-full py-3 text-sm rounded-2xl backdrop-blur-sm transition-all duration-400" 
                         onClick={logout}
                         style={{ 
                           fontFamily: 'Noto Sans, sans-serif',
                           color: '#a495c6',
                           background: 'rgba(47, 37, 70, 0.3)',
                           border: '1px solid rgba(139, 99, 233, 0.25)',
-                          boxShadow: '0 4px 15px rgba(22, 18, 33, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+                          boxShadow: '0 4px 12px rgba(22, 18, 33, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
                         }}
                       >
                         Sair
@@ -785,24 +769,17 @@ export const Header: FC = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Button 
                         variant="secondary" 
-                        className="group w-full py-4 text-base font-medium rounded-3xl relative overflow-hidden transition-all duration-400" 
+                        className="group w-full py-3 text-sm font-medium rounded-2xl relative overflow-hidden transition-all duration-400" 
                         onClick={() => { openAuthModal('register'); toggleMenu(); }}
                         style={{ 
                           fontFamily: 'Noto Sans, sans-serif',
                           backgroundColor: '#FFD700',
                           color: '#1A1A2E',
                           border: 'none',
-                          boxShadow: '0 8px 25px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+                          boxShadow: '0 6px 20px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
                         }}
                       >
-                        <motion.div
-                          className="absolute inset-0 bg-white/20 opacity-0"
-                          whileHover={{ opacity: [0, 1, 0], x: ['-100%', '100%'] }}
-                          transition={{ duration: 0.8 }}
-                          style={{ clipPath: 'polygon(0% 0%, 25% 0%, 45% 100%, 20% 100%)' }}
-                        />
-                        
-                        <WandSparkles size={20} className="opacity-90" />
+                        <WandSparkles size={16} className="opacity-90" />
                         <span className="relative z-10">Iniciar Jornada</span>
                       </Button>
                     </motion.div>
@@ -810,17 +787,17 @@ export const Header: FC = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Button 
                         variant="ghost" 
-                        className="w-full py-4 text-base font-medium rounded-3xl backdrop-blur-sm transition-all duration-400" 
+                        className="w-full py-3 text-sm font-medium rounded-2xl backdrop-blur-sm transition-all duration-400" 
                         onClick={() => { openAuthModal('login'); toggleMenu(); }}
                         style={{ 
                           fontFamily: 'Noto Sans, sans-serif',
                           backgroundColor: 'rgba(47, 37, 70, 0.4)',
                           color: '#8b63e9',
                           border: '1px solid rgba(139, 99, 233, 0.3)',
-                          boxShadow: '0 6px 20px rgba(139, 99, 233, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+                          boxShadow: '0 4px 15px rgba(139, 99, 233, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
                         }}
                       >
-                        <KeyRound size={20} className="opacity-80" />
+                        <KeyRound size={16} className="opacity-80" />
                         <span>Meu Oráculo</span>
                       </Button>
                     </motion.div>
@@ -833,11 +810,11 @@ export const Header: FC = () => {
                 initial={{ opacity: 0, scaleX: 0 }}
                 animate={{ opacity: 1, scaleX: 1 }}
                 transition={{ delay: 0.8, duration: 0.8 }}
-                className="flex items-center mt-4"
+                className="flex items-center mt-2"
               >
-                <div className="w-12 h-px bg-[#8b63e9]/40" />
-                <div className="mx-4 w-2 h-2 bg-[#8b63e9]/30 rounded-full" />
-                <div className="w-12 h-px bg-[#8b63e9]/40" />
+                <div className="w-8 h-px bg-[#8b63e9]/40" />
+                <div className="mx-2 w-1.5 h-1.5 bg-[#8b63e9]/30 rounded-full" />
+                <div className="w-8 h-px bg-[#8b63e9]/40" />
               </motion.div>
             </motion.nav>
           </motion.div>
