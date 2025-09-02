@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import type { FC } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Eye, Clock } from 'lucide-react';
+import { Sparkles, Eye, Clock, Share2, Copy, Check } from 'lucide-react';
 
 // Arcanos expandidos com elemento e energia para uma experiência mais rica
 const majorArcana = [
@@ -152,6 +152,7 @@ export const DailyInsight: FC = () => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [cardData, setCardData] = useState<DailyCardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [shareStatus, setShareStatus] = useState<'idle' | 'sharing' | 'copied'>('idle');
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -277,6 +278,66 @@ export const DailyInsight: FC = () => {
       '#FFBE0B'  // Laranja
     ];
     return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  const handleShare = async () => {
+    if (!dailyCard) return;
+
+    const shareText = `🔮 Meu Insight do Tarot para hoje (${currentDate}):
+
+"${dailyCard.name}"
+${dailyCard.insight}
+
+Elemento: ${dailyCard.element} | Energia: ${dailyCard.energy}
+
+✨ Descubra seu insight diário em Sinastria.com.br`;
+
+    setShareStatus('sharing');
+
+    try {
+      // Tenta usar a Web Share API primeiro (dispositivos móveis)
+      if (navigator.share && 'canShare' in navigator) {
+        await navigator.share({
+          title: `Insight do Tarot - ${dailyCard.name}`,
+          text: shareText,
+          url: window.location.origin
+        });
+        setShareStatus('idle');
+      } else {
+        // Fallback: copia para clipboard
+        await navigator.clipboard.writeText(shareText);
+        setShareStatus('copied');
+        
+        // Volta ao estado idle após 2 segundos
+        setTimeout(() => {
+          setShareStatus('idle');
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Erro ao compartilhar:', error);
+      
+      // Fallback manual: cria um elemento temporário para copiar
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = shareText;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        setShareStatus('copied');
+        setTimeout(() => {
+          setShareStatus('idle');
+        }, 2000);
+      } catch (fallbackError) {
+        console.error('Erro no fallback de cópia:', fallbackError);
+        setShareStatus('idle');
+      }
+    }
   };
 
   const currentDate = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
@@ -412,10 +473,44 @@ export const DailyInsight: FC = () => {
                       transition={{ delay: 0.9 }}
                       className="mt-6 flex justify-center"
                     >
-                      <button className="text-xs text-[#a495c6] opacity-70 hover:opacity-100 transition-opacity flex items-center gap-1 font-['Noto_Sans']">
-                        <Sparkles size={12} />
-                        <span>Compartilhar este insight</span>
-                      </button>
+                      <motion.button 
+                        onClick={handleShare}
+                        disabled={shareStatus === 'sharing'}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="text-xs text-[#a495c6] opacity-70 hover:opacity-100 transition-all duration-300 
+                                   flex items-center gap-2 font-['Noto_Sans'] px-3 py-2 rounded-full
+                                   hover:bg-[#8b63e9]/10 border border-transparent hover:border-[#8b63e9]/30
+                                   disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {shareStatus === 'copied' ? (
+                          <>
+                            <Check size={12} className="text-green-400" />
+                            <span className="text-green-400">Copiado!</span>
+                          </>
+                        ) : shareStatus === 'sharing' ? (
+                          <>
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                            >
+                              <Sparkles size={12} />
+                            </motion.div>
+                            <span>Compartilhando...</span>
+                          </>
+                        ) : (
+                          <>
+                            {typeof navigator.share === 'function' && typeof navigator.canShare === 'function' ? (
+                              <Share2 size={12} />
+                            ) : (
+                              <Copy size={12} />
+                            )}
+                            <span>
+                              {typeof navigator.share === 'function' && typeof navigator.canShare === 'function' ? 'Compartilhar este insight' : 'Copiar insight'}
+                            </span>
+                          </>
+                        )}
+                      </motion.button>
                     </motion.div>
                   </motion.div>
                 )}
