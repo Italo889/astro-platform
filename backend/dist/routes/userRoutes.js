@@ -46,6 +46,68 @@ async function userRoutes(fastify) {
         };
         return reply.status(201).send(response);
     });
+    // TEMPORÁRIO: Corrigir numeração de beta testers
+    fastify.post('/debug/fix-beta-numbers', async (request, reply) => {
+        try {
+            // Busca todos os usuários ordenados por data de criação
+            const users = await prisma_1.prisma.user.findMany({
+                orderBy: { createdAt: 'asc' },
+                where: {
+                    isBetaTester: true
+                }
+            });
+            const updates = [];
+            // Corrige a numeração baseada na ordem real de criação
+            for (let i = 0; i < users.length && i < 20; i++) {
+                const correctPosition = i + 1; // Posição correta (1, 2, 3, ...)
+                if (users[i].betaTesterNumber !== correctPosition) {
+                    await prisma_1.prisma.user.update({
+                        where: { id: users[i].id },
+                        data: { betaTesterNumber: correctPosition }
+                    });
+                    updates.push({
+                        user: users[i].name,
+                        email: users[i].email,
+                        oldNumber: users[i].betaTesterNumber,
+                        newNumber: correctPosition
+                    });
+                }
+            }
+            return reply.send({
+                message: 'Numeração corrigida!',
+                updates
+            });
+        }
+        catch (error) {
+            console.error('Erro ao corrigir numeração:', error);
+            return reply.status(500).send({ error: 'Erro interno do servidor' });
+        }
+    });
+    // TEMPORÁRIO: Debug de usuários
+    fastify.get('/debug/users', async (request, reply) => {
+        const users = await prisma_1.prisma.user.findMany({
+            orderBy: { createdAt: 'asc' },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                createdAt: true,
+                betaTesterNumber: true,
+                isBetaTester: true
+            }
+        });
+        return reply.send({
+            total: users.length,
+            users: users.map((user, index) => ({
+                position: index + 1,
+                name: user.name,
+                email: user.email,
+                isBetaTester: user.isBetaTester,
+                betaTesterNumber: user.betaTesterNumber,
+                createdAt: user.createdAt
+            }))
+        });
+    });
     // NOVO: Rota de Login - POST /users/login
     fastify.post('/login', async (request, reply) => {
         const { email, password } = request.body;
