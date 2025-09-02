@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { LoaderCircle, Telescope, Sparkles, Moon, Sun, Star, ChevronRight, Award, User, FileText } from 'lucide-react';
+import { LoaderCircle, Telescope, Sparkles, Moon, Sun, Star, ChevronRight, Award, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getMyReports } from '../services/reportService';
@@ -114,7 +114,6 @@ const DashboardPage: FC = () => {
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isChangelogModalOpen, setIsChangelogModalOpen] = useState(false);
-  const [badgeMessage, setBadgeMessage] = useState<string | undefined>(undefined);
   
   const { data: reports, isLoading, isError } = useQuery<SavedReport[]>({
     queryKey: ['myReports'],
@@ -233,7 +232,7 @@ const DashboardPage: FC = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="space-y-16"
+          className="space-y-8 sm:space-y-12 lg:space-y-16"
         >
           {/* Tríade de Poder com animação especial */}
           <motion.section 
@@ -291,18 +290,18 @@ const DashboardPage: FC = () => {
       </div>
 
       <main className="relative z-10 flex-1 animate-fade-in w-full">
-        <div className="mx-auto max-w-6xl px-6 py-12 sm:py-20">
+        <div className="container-responsive pt-20 sm:pt-24 lg:pt-28 pb-12 sm:pb-16">
           <motion.header
             style={{ opacity: headerOpacity }}
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: 'easeOut' }}
-            className="mb-16 relative"
+            className="mb-12 sm:mb-16 relative"
           >
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
               <div>
                 <motion.h1 
-                  className="font-serif-logo text-5xl md:text-6xl text-text-base mb-4"
+                  className="font-serif-logo text-responsive-3xl sm:text-responsive-4xl text-text-base mb-4"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
@@ -322,50 +321,86 @@ const DashboardPage: FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
-                className="flex items-center gap-3"
+                className="flex items-center justify-center lg:justify-end gap-2"
               >
-                <div className="px-4 py-2 bg-surface/50 backdrop-blur-sm rounded-full border border-surface/50 flex items-center gap-2">
-                  <Sparkles className="text-primary" size={16} />
-                  <span className="text-sm text-text-muted">Energia Cósmica Ativa</span>
-                </div>
-                
-                {/* Botão de Perfil */}
-                <motion.button
-                  onClick={() => setIsProfileModalOpen(true)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-4 py-2 bg-surface/50 backdrop-blur-sm rounded-full border border-surface/50 flex items-center gap-2 hover:bg-surface/70 transition-colors"
-                >
-                  <User className="text-primary" size={16} />
-                  <span className="text-sm text-text-muted">Meu Perfil</span>
-                </motion.button>
+                {/* Container dos ícones - Design Ultra Clean */}
+                <div className="flex items-center gap-1 p-2 bg-[#1a1625]/60 backdrop-blur-xl rounded-2xl border border-[#3d2f52]/30">
+                  
+                  {/* Ícone Perfil */}
+                  <motion.button
+                    onClick={() => setIsProfileModalOpen(true)}
+                    whileHover={{ 
+                      scale: 1.1,
+                      backgroundColor: "rgba(139, 99, 233, 0.15)"
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group relative p-3 rounded-xl bg-transparent hover:bg-[#8b63e9]/10 transition-all duration-300"
+                    title="Meu Perfil"
+                  >
+                    <User className="text-[#8b63e9] group-hover:text-white transition-colors duration-300" size={20} />
+                    
+                    {/* Indicador sutil */}
+                    <motion.div
+                      className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-[#8b63e9] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    />
+                  </motion.button>
 
-                {/* Botão de Changelog */}
-                <motion.button
-                  onClick={() => setIsChangelogModalOpen(true)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-4 py-2 bg-surface/50 backdrop-blur-sm rounded-full border border-surface/50 flex items-center gap-2 hover:bg-surface/70 transition-colors"
-                >
-                  <Sparkles className="text-accent" size={16} />
-                  <span className="text-sm text-text-muted">Novidades</span>
-                </motion.button>
-                
-                {/* Botão de Conquistas */}
-                <motion.button
-                  onClick={() => setIsBadgeModalOpen(true)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-4 py-2 bg-surface/50 backdrop-blur-sm rounded-full border border-surface/50 flex items-center gap-2 hover:bg-surface/70 transition-colors"
-                >
-                  <Award className="text-accent" size={16} />
-                  <span className="text-sm text-text-muted">Minhas Conquistas</span>
-                  {badges.length > 0 && (
-                    <span className="px-1.5 py-0.5 bg-accent/20 text-accent text-xs rounded-full">
-                      {badges.length}
-                    </span>
-                  )}
-                </motion.button>
+                  {/* Separador sutil */}
+                  <div className="w-px h-6 bg-[#3d2f52]/40" />
+
+                  {/* Ícone Novidades */}
+                  <motion.button
+                    onClick={() => setIsChangelogModalOpen(true)}
+                    whileHover={{ 
+                      scale: 1.1,
+                      backgroundColor: "rgba(255, 215, 0, 0.15)"
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group relative p-3 rounded-xl bg-transparent hover:bg-[#FFD700]/10 transition-all duration-300"
+                    title="Novidades"
+                  >
+                    <Sparkles className="text-[#FFD700] group-hover:text-white transition-colors duration-300" size={20} />
+                    
+                    {/* Indicador sutil */}
+                    <motion.div
+                      className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-[#FFD700] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    />
+                  </motion.button>
+
+                  {/* Separador sutil */}
+                  <div className="w-px h-6 bg-[#3d2f52]/40" />
+                  
+                  {/* Ícone Conquistas */}
+                  <motion.button
+                    onClick={() => setIsBadgeModalOpen(true)}
+                    whileHover={{ 
+                      scale: 1.1,
+                      backgroundColor: "rgba(255, 107, 0, 0.15)"
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group relative p-3 rounded-xl bg-transparent hover:bg-orange-500/10 transition-all duration-300"
+                    title="Minhas Conquistas"
+                  >
+                    <Award className="text-orange-500 group-hover:text-white transition-colors duration-300" size={20} />
+                    
+                    {/* Badge count minimalista */}
+                    {badges.length > 0 && (
+                      <motion.div
+                        className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        <span className="text-[10px] font-bold text-white leading-none">{badges.length}</span>
+                      </motion.div>
+                    )}
+                    
+                    {/* Indicador sutil */}
+                    <motion.div
+                      className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    />
+                  </motion.button>
+                </div>
               </motion.div>
             </div>
             
@@ -382,19 +417,16 @@ const DashboardPage: FC = () => {
         </div>
       </main>
       
-      {/* Modal de Badges - Versão com validação inteligente */}
+      {/* Modal de Badges - Versão compacta otimizada */}
       <BadgeModal
         isOpen={isBadgeModalOpen}
         onClose={() => {
           setIsBadgeModalOpen(false);
-          setBadgeMessage(undefined); // Limpa a mensagem ao fechar
         }}
         badges={badges}
         isLoading={badgesLoading}
-        message={badgeMessage}
         onCheckBadges={async () => {
           const result = await checkRetroactiveBadges();
-          setBadgeMessage(result.message);
           
           // Se não há novas conquistas, mostra a mensagem apropriada
           if (result.hasAllBadges) {
