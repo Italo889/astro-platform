@@ -7,11 +7,16 @@ import { BackgroundEffects } from './BackgroundEffects';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { AuthModal } from '../auth/AuthModal';
+import { BadgeNotification } from '../ui/Badge/BadgeNotification';
+import { useBadgeNotification } from '../../hooks/useBadgeNotification';
 import { useState, useEffect } from 'react';
 
 export const RootLayout: FC = () => {
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  
+  // Badge notification state
+  const { newBadge, isVisible, closeBadgeNotification } = useBadgeNotification();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -112,6 +117,13 @@ export const RootLayout: FC = () => {
 
       {/* Auth Modal */}
       <AuthModal />
+      
+      {/* Badge Notification */}
+      <BadgeNotification 
+        badge={newBadge}
+        isVisible={isVisible}
+        onClose={closeBadgeNotification}
+      />
 
       {/* Cookie Consent Elegante e Simples */}
       <CookieConsent

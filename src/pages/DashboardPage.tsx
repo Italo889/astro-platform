@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { LoaderCircle, Telescope, Sparkles, Moon, Sun, Star, ChevronRight } from 'lucide-react';
+import { LoaderCircle, Telescope, Sparkles, Moon, Sun, Star, ChevronRight, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getMyReports } from '../services/reportService';
@@ -11,6 +11,8 @@ import { useEffect, useState } from 'react';
 import { PowerTriad } from '../components/features/dashboard/PowerTriad';
 import { ActionButtons } from '../components/features/dashboard/ActionButtons';
 import { RecentReportsList } from '../components/features/dashboard/RecentReportsList';
+import BadgeModal from '../components/features/dashboard/BadgeModal';
+import { useBadges } from '../hooks/useBadges';
 import type { SavedReport, PersonalReport } from '../domain/types';
 
 // Componente de partículas mágicas flutuantes
@@ -104,8 +106,11 @@ const TemporalGreeting: FC<{ name?: string }> = ({ name }) => {
 
 const DashboardPage: FC = () => {
   const user = useAuthStore((state) => state.user);
+  const { badges, checkRetroactiveBadges, isLoading: badgesLoading } = useBadges();
   const { scrollY } = useScroll();
   const headerOpacity = useTransform(scrollY, [0, 100], [1, 0.8]);
+  const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
+  const [badgeMessage, setBadgeMessage] = useState<string | undefined>(undefined);
   
   const { data: reports, isLoading, isError } = useQuery<SavedReport[]>({
     queryKey: ['myReports'],
@@ -319,6 +324,22 @@ const DashboardPage: FC = () => {
                   <Sparkles className="text-primary" size={16} />
                   <span className="text-sm text-text-muted">Energia Cósmica Ativa</span>
                 </div>
+                
+                {/* Botão de Conquistas */}
+                <motion.button
+                  onClick={() => setIsBadgeModalOpen(true)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-4 py-2 bg-surface/50 backdrop-blur-sm rounded-full border border-surface/50 flex items-center gap-2 hover:bg-surface/70 transition-colors"
+                >
+                  <Award className="text-accent" size={16} />
+                  <span className="text-sm text-text-muted">Minhas Conquistas</span>
+                  {badges.length > 0 && (
+                    <span className="px-1.5 py-0.5 bg-accent/20 text-accent text-xs rounded-full">
+                      {badges.length}
+                    </span>
+                  )}
+                </motion.button>
               </motion.div>
             </div>
             
@@ -334,6 +355,31 @@ const DashboardPage: FC = () => {
           {renderContent()}
         </div>
       </main>
+      
+      {/* Modal de Badges - Versão com validação inteligente */}
+      <BadgeModal
+        isOpen={isBadgeModalOpen}
+        onClose={() => {
+          setIsBadgeModalOpen(false);
+          setBadgeMessage(undefined); // Limpa a mensagem ao fechar
+        }}
+        badges={badges}
+        isLoading={badgesLoading}
+        message={badgeMessage}
+        onCheckBadges={async () => {
+          const result = await checkRetroactiveBadges();
+          setBadgeMessage(result.message);
+          
+          // Se não há novas conquistas, mostra a mensagem apropriada
+          if (result.hasAllBadges) {
+            console.log('✅ Usuário já possui todas as conquistas disponíveis');
+          } else if (!result.hasNewBadges) {
+            console.log('ℹ️ Nenhuma nova conquista encontrada no momento');
+          } else {
+            console.log(`🎉 ${result.newBadges.length} nova(s) conquista(s) desbloqueada(s)!`);
+          }
+        }}
+      />
     </div>
   );
 };
