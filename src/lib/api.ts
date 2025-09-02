@@ -8,9 +8,9 @@ const getApiBaseUrl = () => {
     return 'http://localhost:3333';
   }
 
-  // produção: backend separado
-  const apiUrl = 'https://arcano-1a7a1b6d1bec.herokuapp.com';
-  console.log('🚀 PRODUÇÃO: Usando backend separado:', apiUrl);
+  // produção: usar o mesmo domínio (monolito)
+  const apiUrl = window.location.origin;
+  console.log('🚀 PRODUÇÃO: Usando monolito no mesmo domínio:', apiUrl);
   return apiUrl;
 };
 
