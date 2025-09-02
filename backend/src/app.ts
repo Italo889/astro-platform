@@ -23,18 +23,58 @@ const server = Fastify({
   logger: true // Configuração simples do logger
 });
 
-// --- Configuração de CORS - PERMITINDO TODAS AS ORIGENS ---
+// --- Configuração de CORS - RESTRITA E SEGURA ---
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? [
+      'https://arcano-1f10c3cc540d.herokuapp.com', // Frontend em produção
+      'https://arcano.herokuapp.com' // Possível domínio alternativo
+    ]
+  : [
+      'http://localhost:5173', // Vite dev server
+      'http://localhost:4321', // Astro dev server  
+      'http://localhost:3000', // Outra porta comum
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:4321',
+      'http://127.0.0.1:3000'
+    ];
+
 server.register(cors, {
-  origin: true, // Permite todas as origens
+  origin: allowedOrigins,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"]
+  allowedHeaders: ["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
+  optionsSuccessStatus: 200 // Para browsers legados
 });
 
-// --- HELMET DESABILITADO ---
+// --- HELMET CONFIGURADO COM SEGURANÇA ---
 server.register(helmet, {
-  contentSecurityPolicy: false,
-  xssFilter: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: [
+        "'self'",
+        "https://arcano-1f10c3cc540d.herokuapp.com",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com"
+      ],
+      scriptSrc: ["'self'", "'unsafe-inline'"], // Necessário para Vite
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      baseUri: ["'self'"]
+    }
+  },
+  hsts: {
+    maxAge: 31536000, // 1 ano
+    includeSubDomains: true,
+    preload: true
+  },
+  xssFilter: true, // Proteção XSS habilitada
+  noSniff: true,
+  frameguard: { action: 'deny' },
+  referrerPolicy: { policy: 'same-origin' }
 });
 
 // --- Plugin de Autenticação ---
