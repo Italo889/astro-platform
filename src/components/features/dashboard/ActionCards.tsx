@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { User, Users, ArrowRight, Sparkles, Stars, Eye } from 'lucide-react';
+import { User, Users, ArrowRight, Sparkles } from 'lucide-react';
 
 interface ActionCardProps {
   href: string;
@@ -14,269 +14,151 @@ interface ActionCardProps {
   features: string[];
 }
 
-// Card Ultra Premium com design místico avançado
+// Card Ultra Clean e Moderno
 const ActionCard: FC<ActionCardProps> = ({ 
   href, 
   icon: Icon, 
   title, 
   description, 
   gradient, 
-  accentColor,
   delay,
   features 
 }) => (
-  <Link to={href} className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD700] focus-visible:ring-offset-2 focus-visible:ring-offset-[#161221]">
+  <Link to={href} className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b63e9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#161221]">
     <motion.div
-      className="relative overflow-hidden bg-gradient-to-br from-[#2f2546]/90 via-[#1a1625] to-[#0f0a1a] border border-[#3d2f52]/50 rounded-3xl p-8 h-full min-h-[280px] transition-all duration-700 group-hover:border-[#8b63e9]/80 group-hover:shadow-2xl group-hover:shadow-[#8b63e9]/30 backdrop-blur-md"
-      whileHover={{ 
-        y: -12, 
-        scale: 1.03,
-        rotateX: 5,
-        rotateY: 2
-      }}
-      whileTap={{ scale: 0.97 }}
-      initial={{ opacity: 0, y: 40, rotateX: 10 }}
-      animate={{ opacity: 1, y: 0, rotateX: 0 }}
+      className="relative overflow-hidden bg-[#1a1625]/90 backdrop-blur-xl border border-[#8b63e9]/20 hover:border-[#8b63e9]/50 
+                 rounded-3xl p-8 h-full min-h-[280px] transition-all duration-500 
+                 shadow-lg hover:shadow-xl hover:shadow-[#8b63e9]/20 group-hover:scale-[1.02]"
+      whileHover={{ y: -8 }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ 
         delay, 
-        duration: 0.8,
+        duration: 0.6,
         type: "spring",
         stiffness: 100,
         damping: 15
       }}
-      style={{ transformStyle: 'preserve-3d' }}
     >
-      {/* Gradiente de fundo dinâmico aprimorado */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-20 transition-all duration-700`} />
+      {/* Gradient de fundo sutil */}
+      <div className={`absolute inset-0 ${gradient} opacity-0 group-hover:opacity-30 transition-opacity duration-500 rounded-3xl`} />
       
-      {/* Múltiplas camadas de brilho */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFD700]/40 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#8b63e9]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      {/* Sistema de partículas avançado */}
-      <div className="absolute top-4 right-4 opacity-30 group-hover:opacity-60 transition-opacity duration-400">
-        <motion.div
-          animate={{ 
-            rotate: 360,
-            scale: [1, 1.2, 1]
-          }}
-          transition={{ 
-            rotate: { duration: 8, repeat: Infinity, ease: "linear" },
-            scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-          }}
-        >
-          <Sparkles size={18} className="text-[#FFD700]" />
-        </motion.div>
-      </div>
-      
-      <div className="absolute top-6 left-4 opacity-20 group-hover:opacity-40 transition-opacity duration-600">
-        <motion.div
-          animate={{ 
-            y: [-2, 2, -2],
-            opacity: [0.2, 0.6, 0.2]
-          }}
-          transition={{ 
-            duration: 3, 
-            repeat: Infinity, 
-            ease: "easeInOut",
-            delay: 1
-          }}
-        >
-          <Stars size={14} className="text-[#8b63e9]" />
-        </motion.div>
-      </div>
-
-      {/* Partículas adicionais */}
-      <div className="absolute bottom-6 right-8 opacity-10 group-hover:opacity-30 transition-opacity duration-700">
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-        >
-          <Eye size={12} className={`text-[${accentColor}]`} />
-        </motion.div>
-      </div>
-
-      {/* Container principal com layout aprimorado */}
+      {/* Container principal */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* Header do card */}
-        <div className="flex flex-col items-center text-center mb-6">
-          {/* Ícone com design ultra premium */}
-          <motion.div 
-            className={`relative p-5 rounded-3xl bg-gradient-to-br from-[#FFD700]/15 via-[${accentColor}]/10 to-transparent border border-[#FFD700]/30 group-hover:border-[#FFD700]/60 transition-all duration-500 mb-4`}
-            whileHover={{ 
-              rotate: 8,
-              scale: 1.1,
-              boxShadow: `0 0 30px ${accentColor}40`
-            }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <Icon size={40} className={`text-[${accentColor}] group-hover:text-[#FFD700] transition-colors duration-400`} />
+        
+        {/* Header elegante */}
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex-1">
+            <h3 className="font-serif text-2xl md:text-3xl text-white group-hover:text-[#FFD700] transition-colors duration-300 mb-3 leading-tight">
+              {title}
+            </h3>
             
-            {/* Múltiplos brilhos internos */}
-            <div className={`absolute inset-0 rounded-3xl bg-[${accentColor}]/10 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-            <div className="absolute inset-0 rounded-3xl bg-[#FFD700]/5 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            
-            {/* Anel orbital */}
-            <motion.div
-              className="absolute inset-0 rounded-3xl border border-[#FFD700]/20"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            {/* Decorative line */}
+            <motion.div 
+              className="h-px bg-gradient-to-r from-[#8b63e9] to-transparent"
+              initial={{ width: '0%' }}
+              animate={{ width: '60%' }}
+              transition={{ delay: delay + 0.3, duration: 0.8 }}
             />
-          </motion.div>
+          </div>
 
-          {/* Título com gradiente de texto */}
-          <motion.h4 
-            className="font-['Marcellus_SC'] text-2xl bg-gradient-to-r from-[#FFD700] via-[#FFF] to-[#8b63e9] bg-clip-text text-transparent group-hover:from-[#FFD700] group-hover:via-[#FFD700] group-hover:to-[#FFF] transition-all duration-500"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
+          {/* Ícone moderno */}
+          <motion.div 
+            className="p-4 rounded-2xl bg-[#8b63e9]/10 border border-[#8b63e9]/20 group-hover:bg-[#8b63e9]/20 group-hover:border-[#8b63e9]/40 transition-all duration-300"
+            whileHover={{ scale: 1.1, rotate: 8 }}
           >
-            {title}
-          </motion.h4>
+            <Icon size={28} className="text-[#8b63e9] group-hover:text-white transition-colors duration-300" />
+          </motion.div>
         </div>
 
-        {/* Descrição expandida */}
+        {/* Conteúdo principal */}
         <div className="flex-1 flex flex-col justify-between">
-          <p className="text-sm text-gray-300 leading-relaxed text-center mb-4 group-hover:text-gray-200 transition-colors duration-300">
+          {/* Descrição */}
+          <p className="text-base md:text-lg text-white/80 leading-relaxed group-hover:text-white/90 transition-colors duration-300 mb-6">
             {description}
           </p>
 
-          {/* Lista de recursos premium */}
-          <div className="space-y-2 mb-6">
-            {features.map((feature, index) => (
-              <motion.div
+          {/* Features como tags */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {features.slice(0, 3).map((feature, index) => (
+              <motion.span
                 key={feature}
-                className="flex items-center text-xs text-gray-400 group-hover:text-gray-300 transition-colors duration-300"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: delay + 0.1 + (index * 0.1), duration: 0.5 }}
+                className="px-3 py-1.5 bg-[#2f2546]/50 border border-[#8b63e9]/20 rounded-full text-xs text-white/70 
+                          group-hover:bg-[#8b63e9]/20 group-hover:text-white/80 transition-all duration-300"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: delay + 0.1 + (index * 0.1), duration: 0.4 }}
               >
-                <motion.div
-                  className="w-1.5 h-1.5 rounded-full bg-[#8b63e9] mr-2"
-                  whileHover={{ scale: 1.5 }}
-                  transition={{ type: "spring", stiffness: 500 }}
-                />
-                <span>{feature}</span>
-              </motion.div>
+                {feature}
+              </motion.span>
             ))}
           </div>
-        </div>
 
-        {/* Footer do card com CTA premium */}
-        <div className="relative mt-auto">
+          {/* CTA moderno */}
           <motion.div 
-            className={`absolute -bottom-2 -right-2 flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-[${accentColor}]/30 to-[#8b63e9]/20 border border-[${accentColor}]/40 text-[${accentColor}] opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:shadow-lg group-hover:shadow-[${accentColor}]/30`}
-            initial={{ x: -20, opacity: 0, rotate: -90 }}
-            whileHover={{ 
-              x: 0, 
-              opacity: 1, 
-              rotate: 0,
-              scale: 1.1
-            }}
-            transition={{ 
-              duration: 0.4,
-              type: "spring",
-              stiffness: 300
-            }}
+            className="flex items-center justify-between pt-4 border-t border-white/5"
+            whileHover={{ x: 4 }}
           >
-            <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform duration-300" />
+            <div className="flex items-center gap-2 text-[#8b63e9] group-hover:text-[#FFD700] transition-colors duration-300">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-medium">Explorar agora</span>
+            </div>
             
-            {/* Pulse ring */}
             <motion.div
-              className={`absolute inset-0 rounded-2xl border border-[${accentColor}]/60`}
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.5, 0, 0.5]
-              }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
+              whileHover={{ x: 4 }}
+              className="p-2 rounded-xl bg-[#8b63e9]/10 group-hover:bg-[#FFD700]/20 transition-all duration-300"
+            >
+              <ArrowRight className="w-5 h-5 text-[#8b63e9] group-hover:text-[#FFD700] transition-colors duration-300" />
+            </motion.div>
           </motion.div>
         </div>
       </div>
 
-      {/* Borda mágica animada */}
-      <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-        <motion.div 
-          className="absolute inset-0 rounded-3xl"
-          animate={{ 
-            background: [
-              `linear-gradient(0deg, #FFD700, transparent, #8b63e9, transparent, #FFD700)`,
-              `linear-gradient(90deg, #8b63e9, transparent, #FFD700, transparent, #8b63e9)`,
-              `linear-gradient(180deg, #FFD700, transparent, #8b63e9, transparent, #FFD700)`,
-              `linear-gradient(270deg, #8b63e9, transparent, #FFD700, transparent, #8b63e9)`
-            ]
-          }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          style={{ 
-            mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-            maskComposite: 'xor',
-            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-            WebkitMaskComposite: 'xor',
-            padding: '2px'
-          }}
-        />
-      </div>
-
-      {/* Efeito de profundidade 3D */}
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-transparent via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      {/* Partículas decorativas */}
+      <div className="absolute top-6 right-16 w-1 h-1 bg-[#FFD700]/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute bottom-8 left-12 w-0.5 h-0.5 bg-[#8b63e9]/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200" />
     </motion.div>
   </Link>
 );
 
 export const ActionCards: FC = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delayChildren: 0.3,
-        staggerChildren: 0.15
-      }
-    }
-  };
-
   const cards = [
     {
       href: "/#formulario",
       icon: User,
-      title: "Meu Relatório Pessoal",
-      description: "Desperte os segredos do seu universo interior através de análises astrológicas profundas e revelações arcanas personalizadas.",
-      gradient: "from-[#FFD700]/25 via-[#8b63e9]/15 to-[#2f2546]/25",
+      title: "Relatório Pessoal",
+      description: "Desvende os segredos do seu universo interior através de uma análise astrológica completa e personalizada.",
+      gradient: "bg-gradient-to-br from-[#FFD700]/20 via-[#8b63e9]/10 to-[#FFD700]/5",
       accentColor: "#FFD700",
       delay: 0,
       features: [
-        "Mapa astral completo e personalizado",
-        "Análise de personalidade profunda",
-        "Previsões e tendências futuras",
-        "Arcanos maiores e menores"
+        "Mapa astral personalizado",
+        "Análise numerológica",
+        "Arcanos e previsões"
       ]
     },
     {
       href: "/sinastria",
       icon: Users,
-      title: "Analisar Conexão",
-      description: "Explore a dança cósmica entre duas almas e desvende os mistérios da compatibilidade através da sabedoria ancestral.",
-      gradient: "from-[#8b63e9]/25 via-[#FFD700]/15 to-[#2f2546]/25",
+      title: "Análise de Conexão",
+      description: "Explore a compatibilidade entre duas pessoas através da sabedoria ancestral da astrologia e sinastria.",
+      gradient: "bg-gradient-to-br from-[#8b63e9]/20 via-[#FFD700]/10 to-[#8b63e9]/5",
       accentColor: "#8b63e9",
-      delay: 0.15,
+      delay: 0.2,
       features: [
-        "Compatibilidade astrológica detalhada",
-        "Análise de conexões energéticas",
-        "Pontos de harmonia e desafios",
-        "Orientações para relacionamentos"
+        "Compatibilidade detalhada",
+        "Conexões energéticas",
+        "Orientações práticas"
       ]
     }
   ];
 
   return (
     <motion.div
-      className="space-y-8"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+      className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
     >
       {cards.map((card) => (
         <ActionCard 
@@ -291,27 +173,6 @@ export const ActionCards: FC = () => {
           features={card.features}
         />
       ))}
-      
-      {/* Elemento decorativo entre cards */}
-      <motion.div 
-        className="flex justify-center py-4"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-      >
-        <motion.div
-          className="w-12 h-0.5 bg-gradient-to-r from-transparent via-[#FFD700]/50 to-transparent"
-          animate={{ 
-            width: ["0px", "48px", "0px"],
-            opacity: [0, 1, 0]
-          }}
-          transition={{ 
-            duration: 3, 
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </motion.div>
     </motion.div>
   );
 };
