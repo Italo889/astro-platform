@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
+import type { Badge } from '../domain/types';
 
 const getApiBaseUrl = () => {
   // localhost
@@ -34,9 +35,32 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// INTERCEPTOR DE RESPOSTA: erros e CORS
+// INTERCEPTOR DE RESPOSTA: erros, CORS e badges
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // 🏆 Verificar se a resposta contém badges conquistadas
+    const data = response.data;
+    
+    // Para registros de usuário com badges
+    if (data?.newBadges && Array.isArray(data.newBadges) && data.newBadges.length > 0) {
+      // Importa dinamicamente para evitar circular dependency
+      import('../hooks/useBadgeNotification').then(({ useBadgeNotification }) => {
+        const { showBadgeNotification } = useBadgeNotification.getState();
+        // Mostra a primeira badge conquistada
+        showBadgeNotification(data.newBadges[0]);
+      });
+    }
+    
+    // Para outras operações que possam retornar um badge individual
+    if (data?.newBadge) {
+      import('../hooks/useBadgeNotification').then(({ useBadgeNotification }) => {
+        const { showBadgeNotification } = useBadgeNotification.getState();
+        showBadgeNotification(data.newBadge);
+      });
+    }
+    
+    return response;
+  },
   (error) => {
     if (error.code === 'ERR_NETWORK' || error.message.includes('CORS')) {
       console.error('Erro CORS: Servidor API precisa permitir requisições de:', window.location.origin);

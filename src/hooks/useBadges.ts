@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
-import type { Badge } from '../components/ui/Badge/Badge';
+import { useAuthStore } from '../store/authStore';
+import type { Badge } from '../domain/types';
 
 interface BetaTesterInfo {
   number: number;
@@ -19,13 +20,16 @@ export const useBadges = () => {
   const [betaTesterInfo, setBetaTesterInfo] = useState<BetaTesterInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Usa a store de auth em vez de localStorage diretamente
+  const token = useAuthStore((state) => state.token);
 
   const fetchBadges = async () => {
     try {
       setIsLoading(true);
       setError(null);
       
-      const response = await api.get<BadgesResponse>('/api/users/badges');
+      const response = await api.get<BadgesResponse>('/users/badges');
       setBadges(response.data.badges);
       setBetaTesterInfo(response.data.betaTester);
     } catch (err: any) {
@@ -35,13 +39,47 @@ export const useBadges = () => {
     }
   };
 
+  // 🔄 Nova função para verificar badges retroativas com validação inteligente
+  const checkRetroactiveBadges = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await api.post('/users/badges/check-retroactive');
+      const { newBadges, message, hasAllBadges, currentBadgesCount, totalAvailable } = response.data;
+      
+      // Atualiza a lista de badges após verificação
+      await fetchBadges();
+      
+      return {
+        newBadges,
+        message,
+        hasAllBadges,
+        currentBadgesCount,
+        totalAvailable,
+        hasNewBadges: newBadges.length > 0
+      };
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Erro ao verificar badges retroativas');
+      return {
+        newBadges: [],
+        message: 'Erro ao verificar conquistas',
+        hasAllBadges: false,
+        currentBadgesCount: 0,
+        totalAvailable: 0,
+        hasNewBadges: false
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     // Só busca badges se o usuário estiver logado
-    const token = localStorage.getItem('token');
     if (token) {
       fetchBadges();
     }
-  }, []);
+  }, [token]); // Adiciona token como dependência
 
   const isBetaTester = betaTesterInfo !== null;
   const betaTesterNumber = betaTesterInfo?.number || null;
@@ -53,6 +91,7 @@ export const useBadges = () => {
     betaTesterNumber,
     isLoading,
     error,
-    refetch: fetchBadges
+    refetch: fetchBadges,
+    checkRetroactiveBadges
   };
 };
