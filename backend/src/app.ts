@@ -122,7 +122,8 @@ server.setNotFoundHandler((request, reply) => {
   // Verifica se o arquivo index.html existe antes de tentar enviá-lo
   const indexPath = path.join(frontendDistPath, 'index.html');
   if (fs.existsSync(indexPath)) {
-    return reply.sendFile('index.html', frontendDistPath);
+    const indexContent = fs.readFileSync(indexPath, 'utf8');
+    return reply.type('text/html').send(indexContent);
   } else {
     return reply.status(404).send({
       success: false,

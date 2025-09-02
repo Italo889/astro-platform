@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '../prisma';
 import { computeReport } from '../domain/engine';
+import { BadgeSystem } from '../domain/lib/badgeSystem';
 
 // Schema de validação para a entrada do POST
 const birthInputSchema = z.object({
@@ -33,7 +34,29 @@ export async function reportRoutes(app: FastifyInstance) {
         }
       });
 
-      return reply.status(201).send(newReport);
+      // 🏆 NOVO: Sistema de Badges - Conceder badge do primeiro relatório
+      let newBadge = null;
+      try {
+        // Verifica se é o primeiro relatório do usuário
+        const userReportsCount = await prisma.report.count({
+          where: { ownerId: userId }
+        });
+        
+        if (userReportsCount === 1) {
+          newBadge = await BadgeSystem.awardBadge(userId, 'FIRST_REPORT');
+        }
+      } catch (badgeError) {
+        // Log do erro mas não falha a criação do relatório
+        app.log.error({ error: badgeError }, 'Erro ao conceder badge do primeiro relatório');
+      }
+
+      // Resposta incluindo badge conquistada (se houver)
+      const response = {
+        ...newReport,
+        newBadge
+      };
+
+      return reply.status(201).send(response);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({ message: 'Dados de entrada inválidos.', issues: error.format() });
