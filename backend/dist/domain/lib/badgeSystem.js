@@ -39,31 +39,31 @@ exports.AVAILABLE_BADGES = {
     BETA_TESTER: {
         id: 'BETA_TESTER',
         name: 'Beta Tester',
-        description: 'Pioneiro da Plataforma Arcano - Entre os primeiros 20 usuários',
-        icon: '🌟',
+        description: 'Entre os primeiros 20 exploradores a descobrir os mistérios desta dimensão digital',
+        icon: '⭐',
         color: '#FFD700',
         rarity: 'legendary'
     },
     EARLY_ADOPTER: {
         id: 'EARLY_ADOPTER',
-        name: 'Pioneiro Místico',
-        description: 'Um dos primeiros exploradores dos segredos astrais',
-        icon: '🔮',
-        color: '#9333EA',
+        name: 'Pioneiro Cósmico',
+        description: 'Entre os primeiros 100 iniciados a embarcar nesta jornada de autoconhecimento',
+        icon: '🌟',
+        color: '#8b63e9',
         rarity: 'epic'
     },
     FIRST_REPORT: {
         id: 'FIRST_REPORT',
-        name: 'Primeiro Despertar',
-        description: 'Gerou seu primeiro relatório astrológico',
-        icon: '✨',
-        color: '#06B6D4',
+        name: 'Despertar Estelar',
+        description: 'Realizou sua primeira consulta ao Oráculo, iniciando a jornada de descoberta interior',
+        icon: '🔮',
+        color: '#4F46E5',
         rarity: 'common'
     },
     SYNASTRY_MASTER: {
         id: 'SYNASTRY_MASTER',
-        name: 'Mestre da Sinastria',
-        description: 'Especialista em compatibilidade astrológica',
+        name: 'Tecelão de Destinos',
+        description: 'Mestre na arte de decifrar as conexões cósmicas entre almas - 5 sinastrías realizadas',
         icon: '💫',
         color: '#EC4899',
         rarity: 'rare'
@@ -73,37 +73,101 @@ class BadgeSystem {
     static async checkAndAwardBetaTesterBadge(userId) {
         const { prisma } = await Promise.resolve().then(() => __importStar(require('../../prisma')));
         try {
-            // Conta quantos usuários já são beta testers
-            const betaTesterCount = await prisma.user.count({
-                where: { isBetaTester: true }
+            // Busca o usuário atual
+            const currentUser = await prisma.user.findUnique({
+                where: { id: userId }
             });
-            // Se ainda não chegou no limite de 20
-            if (betaTesterCount < 20) {
-                const nextBetaTesterNumber = betaTesterCount + 1;
-                // Atualiza o usuário
+            if (!currentUser)
+                return null;
+            // Se o usuário já tem a badge, retorna ela
+            const currentBadges = currentUser.badges || {};
+            if (currentBadges.BETA_TESTER) {
+                console.log('🎯 User already has BETA_TESTER badge');
+                return currentBadges.BETA_TESTER;
+            }
+            // 🎯 NOVA LÓGICA: Verifica se o usuário está entre os primeiros 20 por data de criação
+            const usersCreatedBefore = await prisma.user.count({
+                where: {
+                    createdAt: {
+                        lt: currentUser.createdAt
+                    }
+                }
+            });
+            const userPosition = usersCreatedBefore + 1; // +1 porque é baseado em zero
+            console.log(`🔍 User position: ${userPosition}, eligible for beta: ${userPosition <= 20}`);
+            // Se o usuário está entre os primeiros 20, concede a badge
+            if (userPosition <= 20) {
+                const newBadge = {
+                    ...exports.AVAILABLE_BADGES.BETA_TESTER,
+                    earnedAt: new Date()
+                };
+                console.log('🌟 Awarding BETA_TESTER badge to user');
                 await prisma.user.update({
                     where: { id: userId },
                     data: {
                         isBetaTester: true,
-                        betaTesterNumber: nextBetaTesterNumber,
+                        betaTesterNumber: userPosition,
                         badges: {
-                            BETA_TESTER: {
-                                ...exports.AVAILABLE_BADGES.BETA_TESTER,
-                                earnedAt: new Date()
-                            }
+                            ...currentBadges,
+                            BETA_TESTER: newBadge
                         }
                     }
                 });
-                return {
-                    ...exports.AVAILABLE_BADGES.BETA_TESTER,
-                    earnedAt: new Date()
-                };
+                return newBadge;
             }
             return null;
         }
         catch (error) {
             console.error('Erro ao verificar badge de beta tester:', error);
             return null;
+        }
+    }
+    // 🔄 NOVA FUNÇÃO: Verifica e concede badges retroativas para usuários existentes
+    static async checkRetroactiveBadges(userId) {
+        const { prisma } = await Promise.resolve().then(() => __importStar(require('../../prisma')));
+        const newBadges = [];
+        try {
+            // Verifica badge de Beta Tester
+            const betaBadge = await this.checkAndAwardBetaTesterBadge(userId);
+            if (betaBadge)
+                newBadges.push(betaBadge);
+            // Verifica badge de Early Adopter (primeiros 100)
+            const currentUser = await prisma.user.findUnique({ where: { id: userId } });
+            if (currentUser) {
+                const usersCreatedBefore = await prisma.user.count({
+                    where: { createdAt: { lt: currentUser.createdAt } }
+                });
+                const userPosition = usersCreatedBefore + 1;
+                if (userPosition <= 100) {
+                    const earlyAdopterBadge = await this.awardBadge(userId, 'EARLY_ADOPTER');
+                    if (earlyAdopterBadge)
+                        newBadges.push(earlyAdopterBadge);
+                }
+            }
+            // Verifica badge de Primeiro Relatório
+            const userReports = await prisma.report.count({ where: { ownerId: userId } });
+            if (userReports >= 1) {
+                const firstReportBadge = await this.awardBadge(userId, 'FIRST_REPORT');
+                if (firstReportBadge)
+                    newBadges.push(firstReportBadge);
+            }
+            // Verifica badge de Mestre da Sinastria (5 sinastrías)
+            const userSynastries = await prisma.report.count({
+                where: {
+                    ownerId: userId,
+                    content: { path: ['type'], equals: 'synastry' }
+                }
+            });
+            if (userSynastries >= 5) {
+                const synastryBadge = await this.awardBadge(userId, 'SYNASTRY_MASTER');
+                if (synastryBadge)
+                    newBadges.push(synastryBadge);
+            }
+            return newBadges;
+        }
+        catch (error) {
+            console.error('Erro ao verificar badges retroativas:', error);
+            return [];
         }
     }
     static async awardBadge(userId, badgeId) {
@@ -120,12 +184,14 @@ class BadgeSystem {
             const currentBadges = user.badges || {};
             // Se já tem a badge, não concede novamente
             if (currentBadges[badgeId]) {
+                console.log(`🎯 User already has ${badgeId} badge`);
                 return currentBadges[badgeId];
             }
             const newBadge = {
                 ...exports.AVAILABLE_BADGES[badgeId],
                 earnedAt: new Date()
             };
+            console.log(`🌟 Awarding ${badgeId} badge to user`);
             await prisma.user.update({
                 where: { id: userId },
                 data: {
@@ -148,15 +214,20 @@ class BadgeSystem {
             const user = await prisma.user.findUnique({
                 where: { id: userId }
             });
-            if (!user || !user.badges)
+            if (!user || !user.badges) {
                 return [];
+            }
             const badges = user.badges;
-            return Object.values(badges);
+            const badgeArray = Object.values(badges);
+            return badgeArray;
         }
         catch (error) {
             console.error('Erro ao buscar badges do usuário:', error);
             return [];
         }
+    }
+    static getAvailableBadges() {
+        return exports.AVAILABLE_BADGES;
     }
 }
 exports.BadgeSystem = BadgeSystem;

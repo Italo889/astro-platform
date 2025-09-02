@@ -26,15 +26,27 @@ export async function userRoutes(fastify: FastifyInstance) {
       data: { name, email, password: hashedPassword },
     });
 
-    // 🌟 NOVO: Verificar e conceder badge de Beta Tester
+    // 🌟 NOVO: Sistema de Badges
     const betaBadge = await BadgeSystem.checkAndAwardBetaTesterBadge(user.id);
+    
+    // 🎯 NOVO: Verificar e conceder badge de Early Adopter (primeiros 100 usuários)
+    let earlyAdopterBadge = null;
+    try {
+      const totalUsers = await prisma.user.count();
+      if (totalUsers <= 100) {
+        earlyAdopterBadge = await BadgeSystem.awardBadge(user.id, 'EARLY_ADOPTER');
+      }
+    } catch (error) {
+      fastify.log.error({ error }, 'Erro ao verificar badge Early Adopter');
+    }
     
     const { password: _, ...userWithoutPassword } = user;
     
-    // Se ganhou a badge de beta tester, incluir no retorno
+    // Incluir badges conquistadas no retorno
+    const newBadges = [betaBadge, earlyAdopterBadge].filter(Boolean);
     const response = {
       ...userWithoutPassword,
-      newBadge: betaBadge // null se não ganhou, objeto Badge se ganhou
+      newBadges // array com as badges conquistadas
     };
     
     return reply.status(201).send(response);
@@ -102,6 +114,37 @@ export async function userRoutes(fastify: FastifyInstance) {
       });
     } catch (error) {
       return reply.status(500).send({ error: 'Erro ao buscar badges.' });
+    }
+  });
+
+  // 🔄 NOVA ROTA: Verificar e conceder badges retroativas
+  fastify.post('/badges/check-retroactive', {
+    preHandler: [fastify.authenticate]
+  }, async (request, reply) => {
+    try {
+      const userId = (request.user as any).id;
+      const newBadges = await BadgeSystem.checkRetroactiveBadges(userId);
+      
+      // Buscar badges atuais do usuário para verificar se já tem todas
+      const currentBadges = await BadgeSystem.getUserBadges(userId);
+      const totalAvailableBadges = Object.keys(BadgeSystem.getAvailableBadges()).length;
+      const hasAllBadges = currentBadges.length === totalAvailableBadges;
+      
+      return reply.send({
+        message: newBadges.length > 0 
+          ? 'Novas conquistas descobertas!' 
+          : hasAllBadges 
+            ? 'Parabéns! Você já obteve todas as conquistas disponíveis.' 
+            : 'Nenhuma nova conquista encontrada no momento.',
+        newBadges,
+        count: newBadges.length,
+        hasAllBadges,
+        currentBadgesCount: currentBadges.length,
+        totalAvailable: totalAvailableBadges
+      });
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Erro ao verificar badges retroativas.' });
     }
   });
 }

@@ -119,3 +119,14 @@ export interface BirthDetails {
   minute: number;
   timezoneOffset: number;
 }
+
+// Sistema de Badges
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  earnedAt: Date;
+}
